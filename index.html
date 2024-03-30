@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="Webpage description goes here" />
+  <meta charset="utf-8">
+  <title>Gosu X Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="">
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
+</head>
+
+<body>
+
+<!-- <div class="nice flex-row">
+  <div>
+    Number of games: {{nb_games}}
+  </div>
+  <div class="flex-row">
+    <div>{{min_elo}} < ELO </div>
+    <div class="slidecontainer">
+      <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
+    </div>
+  </div>
+</div>   -->
+
+<!-- <div class="container flex-row">
+  <div class="flex-column left-panel nice">
+    <div class="flex-row nice">
+      <div class="box xian">
+        <h1>Xi'an</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>
+      </div>
+      <div class="box narashima">
+        <h1>Narashima</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>        
+      </div>
+      <div class="box abhilasha">
+        <h1>Abhilasha</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>  
+      </div>
+      <div class="box galmi">
+        <h1>Galmi</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>  
+      </div>
+    </div>
+    <div class="flex-row nice">
+      <div class="box tomorrow">
+        <h1>Tomorrow</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>  
+      </div>
+      <div class="box goan-sul">
+        <h1>Goan-Sul</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>  
+      </div>
+      <div class="box justice">
+        <h1>Justice</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>  
+      </div>
+      <div class="box phoenix">
+        <h1>Phoenix</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>  
+      </div>
+    </div>
+    <div class="flex-row nice">
+      <div class="box abunakkashii">
+        <h1>Abunakkashii</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>{{p1_pct}}%</td>
+            <td>{{p2_pct}}%</td>
+          </tr>
+        </table>  
+      </div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>    
+  </div>
+  <div class="right-panel flex-row nice">
+    <div class="flex-row">
+      <div id="first-player-picks" class="flex-column nice">
+        <div>
+          <h1>P1</h1>
+          <p>{{p1_pct}}%</p>
+        </div>
+        <div id="first-player-pick1" class="flex-column border">
+          <div class="box narashima">Abunakkashii</div>      
+        </div>
+        <div id="first-player-pick2" class="flex-column border grow-2">
+          <div class="box narashima">Abunakkashii</div>      
+          <div class="box narashima">Abunakkashii</div>      
+        </div>
+      </div>
+      <div id="second-player-picks" class="flex-column nice">
+        <div>
+          <h1>P2</h1>
+          <p>{{p2_pct}}%</p>
+        </div>
+        <div id="second-player-pick1" class="flex-column border grow-2">
+          <div class="box narashima">Abunakkashii</div>      
+          <div class="box narashima">Abunakkashii</div>      
+        </div>
+        <div id="second-player-pick2" class="flex-column border">
+          <div class="box narashima">Abunakkashii</div>      
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<script type="module">
+  import { h, render } from 'https://esm.sh/preact';
+  
+  import htm from 'https://esm.sh/htm';
+  import { useState, useEffect } from 'https://esm.sh/preact/hooks';
+
+  const clans_classes = {
+    "Xi'an":"xian",
+    "Narashima":"narashima",
+    "Abhilasha":"abhilasha",
+    "Galmi":"galmi",
+    "Tomorrow":"tomorrow",
+    "Goan-Sul":"goan-sul",
+    "Justice":"justice",
+    "Phoenix":"phoenix",
+    "Abunakkashii":"abunakkashii"
+  }
+
+
+  function p1VictoryPct(data){
+    const totElements = data.length;
+    const p1wins = _.select(data,(d) => _.select(d["players"],(el) => el["is_first_player"])[0]["is_winner"]).length
+    return parseInt(parseFloat(p1wins)/totElements*100)
+  }
+
+  // Initialize htm with Preact
+  const html = htm.bind(h);
+
+  function Clan (props) {
+    const p1pct = p1VictoryPct(props.hypothesisData)
+
+    return html `
+      <div class="box ${props.clan_class} ${props.visible ? '' : "hidden"}">
+        <div class="flex-row">
+          <div>
+            ${props.all_clans_selected ? '' : html `<button onClick=${(e) => props.selectClan(props.clan_name)}>select</button>`}
+          </div>
+          <div>
+            ${props.ban_selected ? '' : html`<button onClick=${(e) => props.selectBan(props.clan_name)}>ban</button>`}            
+          </div>
+        </div>
+        <h1>${props.clan_name}</h1>
+        <table class="victory-stat-table">
+          <tr>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td>${p1pct}%</td>
+            <td>${100-p1pct}%</td>
+          </tr>
+          <tr>
+            <td colspan="2">${props.hypothesisData.length} games</td>
+          </tr>
+        </table>        
+      </div>
+    `    
+  }
+
+  function filterData({data,clanBanned,minElo,clansSelected}){
+    return _.filter(data,(el) => {
+      return (el["average_rank"] >= minElo)
+        && ((clanBanned.length === 0) || _.isEqual(clanBanned,el["clans_banned"]))
+        && ((clansSelected[0] === undefined) || (el["clans_selected"][0] === clansSelected[0]))
+        && ((clansSelected[1] === undefined) || (el["clans_selected"][1] === clansSelected[1]) || (el["clans_selected"][2] === clansSelected[1]))
+        && ((clansSelected[2] === undefined) || (el["clans_selected"][1] === clansSelected[2]) || (el["clans_selected"][2] === clansSelected[2]))
+        && ((clansSelected[3] === undefined) || (el["clans_selected"][3] === clansSelected[3]) || (el["clans_selected"][4] === clansSelected[3]))
+        && ((clansSelected[4] === undefined) || (el["clans_selected"][3] === clansSelected[4]) || (el["clans_selected"][4] === clansSelected[4]))
+        && ((clansSelected[5] === undefined) || (el["clans_selected"][5] === clansSelected[5]))
+    })
+  }
+
+  function App (props) {
+    const [minElo,setMinElo] = useState(0)
+    const [selectedData,setSelectedData] = useState([])
+    const [allData,setAllData] = useState([])
+    const [datasetELO, setDatasetELO] = useState({min: 0, max: 100})
+    const [clanBanned,setClanBanned] = useState([])
+    const [clansSelected,setClanSelected] = useState([undefined,undefined,undefined,undefined,undefined,undefined])
+
+    function addClanToSelection(clan_name){
+      const nextIndex = clansSelected.indexOf(undefined)
+      let newClans = [...clansSelected]
+      newClans[nextIndex] = clan_name
+      return newClans   
+    }
+    function selectClan(clan_name){
+      setClanSelected(addClanToSelection(clan_name))
+    }
+    function removeClan(clan_name){
+      let newClans = [...clansSelected]
+      const i = clansSelected.indexOf(clan_name)
+      newClans[i] = undefined
+      setClanSelected(newClans)
+    }
+    function ClanSelected({clan_name, removeClan}){
+      if(clan_name === undefined){
+        return html`<div></div>`
+      }else{
+        return html `<div class="box ${clans_classes[clan_name]}">
+          ${clan_name}
+          <button onClick=${(e) => removeClan(clan_name)}>remove</button>
+        </div>`
+      }        
+    }
+
+
+    useEffect(async () => {
+      const response = await fetch("/data.json");
+      setAllData(await response.json());
+    },[])
+    useEffect(() => {
+      setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected}))
+      setDatasetELO({
+        min: _.min(_.map(allData, (el) => el["average_rank"])),
+        max: _.max(_.map(allData, (el) => el["average_rank"]))
+      })
+    }, [allData,minElo,clanBanned,clansSelected])
+
+    return html`
+      <div class="nice flex-row">
+        <div>
+          Number of games: ${selectedData.length}
+        </div>
+        <div class="flex-row">
+          <div>
+            ELO > ${minElo}
+          </div>
+          <div class="slidecontainer">
+            <input 
+              type="range" 
+              min="${datasetELO.min}" 
+              max="${datasetELO.max}" 
+              value="${minElo}" 
+              class="slider" 
+              onInput=${(e) => {setMinElo(e.currentTarget.value)}}
+              />
+          </div>
+        </div>
+      </div>
+<div class="container flex-row">
+  <div class="flex-column left-panel nice">
+    <div class="flex-row nice">
+      ${[
+        {clan_class:"xian",clan_name: "Xi'an"},
+        {clan_class:"narashima",clan_name: "Narashima"},
+        {clan_class:"abhilasha",clan_name: "Abhilasha"},
+        {clan_class:"galmi",clan_name: "Galmi"}
+      ].map((el) => html`
+        <${Clan} 
+          clan_class=${el.clan_class} 
+          clan_name=${el.clan_name}
+          ban_selected=${clanBanned.length > 0} 
+          selectBan=${(c) => setClanBanned([c])}
+          selectClan=${(c) => selectClan(c)}
+          visible=${(clanBanned.indexOf(el.clan_name) < 0) && (clansSelected.indexOf(el.clan_name) < 0)}
+          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
+          all_clans_selected=${clansSelected.indexOf(undefined) < 0}
+        />
+      `)}
+    </div>
+    <div class="flex-row nice">
+      ${[
+        {clan_class:"tomorrow",clan_name: "Tomorrow"},
+        {clan_class:"goan-sul",clan_name: "Goan-Sul"},
+        {clan_class:"justice",clan_name: "Justice"},
+        {clan_class:"phoenix",clan_name: "Phoenix"}
+      ].map((el) => html`
+        <${Clan} 
+          clan_class=${el.clan_class} 
+          clan_name=${el.clan_name}
+          ban_selected=${clanBanned.length > 0} 
+          selectBan=${(c) => setClanBanned([c])}
+          selectClan=${(c) => selectClan(c)}
+          visible=${(clanBanned.indexOf(el.clan_name) < 0) && (clansSelected.indexOf(el.clan_name) < 0)}
+          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
+          all_clans_selected=${clansSelected.indexOf(undefined) < 0}
+        />
+      `)}
+    </div>
+    <div class="flex-row nice">
+      <${Clan} 
+        clan_class="abunakkashii" 
+        clan_name="Abunakkashii" 
+        ban_selected=${clanBanned.length > 0} 
+        selectBan=${(c) => setClanBanned([c])}
+        selectClan=${(c) => selectClan(c)}
+        visible=${(clanBanned.indexOf("Abunakkashii") < 0) && (clansSelected.indexOf("Abunakkashii") < 0)}
+        hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection("Abunakkashii")})}
+        all_clans_selected=${clansSelected.indexOf(undefined) < 0}
+      />
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+    </div>    
+  </div>
+  <div class="right-panel flex-col nice">
+    <div class="flex-row">
+      <div id="first-player-picks" class="flex-column nice">
+        <div>
+          <h1>P1</h1>
+          <p>${p1VictoryPct(selectedData)}% WIN</p>
+        </div>
+        <div id="first-player-pick1" class="flex-column border">
+          <${ClanSelected} clan_name=${clansSelected[0]} removeClan=${removeClan}/>         
+        </div>
+        <div id="first-player-pick2" class="flex-column border grow-2">
+          <${ClanSelected} clan_name=${clansSelected[3]} removeClan=${removeClan}/>         
+          <${ClanSelected} clan_name=${clansSelected[4]} removeClan=${removeClan}/>         
+        </div>
+      </div>
+      <div id="second-player-picks" class="flex-column nice">
+        <div>
+          <h1>P2</h1>
+          <p>${100-p1VictoryPct(selectedData)}% WIN</p>
+        </div>
+        <div id="second-player-pick1" class="flex-column border grow-2">
+          <${ClanSelected} clan_name=${clansSelected[1]} removeClan=${removeClan}/>         
+          <${ClanSelected} clan_name=${clansSelected[2]} removeClan=${removeClan}/>         
+        </div>
+        <div id="second-player-pick2" class="flex-column border">
+          <${ClanSelected} clan_name=${clansSelected[5]} removeClan=${removeClan}/>         
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Banned</h3>
+      ${clanBanned.map((clan_name) => {
+        return html`
+          <div class="box ${clans_classes[clan_name]}">
+            ${clan_name}
+            <button onClick=${(e) => setClanBanned([])}>Unban</button>
+          </div>   
+        `
+      })}
+    </div>
+
+  </div>
+</div>
+
+    `;
+  }
+
+  render(html`<${App} name="World" />`, document.body);
+</script>
+</body>
+</html>

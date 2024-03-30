@@ -1,0 +1,86 @@
+.slidecontainer {
+  flex-grow: 5 !important; /* Width of the outside container */
+}
+.slidecontainer > input {
+  width: 100%;
+}
+.left-panel{
+  flex-grow: 2 !important;
+}
+.right-panel{
+  flex-grow: 1;
+}
+.grow-2{
+  flex-grow: 2 !important;
+}
+
+.xian{
+  background-color: #d1ba24;
+}
+.narashima{
+  background-color: #d18324;
+}
+.abhilasha{
+  background-color: #5424ad;
+}
+.galmi{
+  background-color: #2a8014;
+}
+.tomorrow{
+  background-color: #a422b5;
+}
+.goan-sul{
+  background-color: #911010;
+}
+.justice{
+  background-color: #a1a1a1;
+}
+.phoenix{
+  background-color: #0f33b8;
+}
+.abunakkashii{
+  background-color: #52473c;
+}
+
+.nice{
+  margin: 5px;
+  padding: 5px;
+  border-radius: 5px;  
+}
+
+.victory-stat-table{
+  width:100%;
+}
+
+.box {
+  margin: 5px;
+  padding: 5px;
+  border-radius: 5px;  
+  text-align: center;
+}
+
+.border {
+  border:solid 1px black;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.flex-column > div{
+  flex-grow: 1;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+.flex-row > div{
+  flex-grow: 1;
+}
+.hidden{
+  visibility: hidden;
+}
+
+button{
+  width: 100%;
+}
