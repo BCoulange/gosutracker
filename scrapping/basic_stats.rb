@@ -214,7 +214,9 @@ banned_stats.each do |k,v|
   puts "- #{k} : #{(v.to_f/with_ban.size*100).to_i}% (#{v}/#{with_ban.size})"
 end
 
-max_number_of_configs = 9*8*7*6*5*4*3/6/6
+total_nb_of_clans = 9
+max_number_of_configs = total_nb_of_clans*(total_nb_of_clans-1)*(total_nb_of_clans-2)*(total_nb_of_clans-3)*(total_nb_of_clans-4)*(total_nb_of_clans-5)*(total_nb_of_clans-6)/6/6
+puts "max number of configs : #{max_number_of_configs}"
 nb_of_configs_seen = data.map{|d| [d["clans_banned"]] + [d["clans_selected"][0],d["clans_selected"][3],d["clans_selected"][4]].sort + [d["clans_selected"][1],d["clans_selected"][2],d["clans_selected"][5]].sort}.uniq.size
 
 puts "#{(nb_of_configs_seen.to_f/max_number_of_configs*100).to_i}% configs seen (#{nb_of_configs_seen}/#{max_number_of_configs})"
