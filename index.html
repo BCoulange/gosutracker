@@ -20,6 +20,8 @@
   import htm from 'https://esm.sh/htm';
   import { useState, useEffect } from 'https://esm.sh/preact/hooks';
 
+  const optimal_computation_min_dataset_size = 10
+
   const clans_classes = {
     "Xi'an":"xian",
     "Narashima":"narashima",
@@ -32,6 +34,87 @@
     "Abunakkashii":"abunakkashii"
   }
 
+  function optimal_6th_clan_draft(data,current_selection){
+    const dataset = _.select(data,(d) => {
+      return (d["clans_selected"][0] === current_selection[0]) 
+        && ((d["clans_selected"][1] === current_selection[1]) || (d["clans_selected"][2] === current_selection[1]))
+        && ((d["clans_selected"][1] === current_selection[2]) || (d["clans_selected"][2] === current_selection[2]))
+        && ((d["clans_selected"][3] === current_selection[3]) || (d["clans_selected"][4] === current_selection[3]))
+        && ((d["clans_selected"][3] === current_selection[4]) || (d["clans_selected"][4] === current_selection[4]))
+    })
+    const trials = _.filter(_.map(_.groupBy(dataset, (d) => d["clans_selected"][5]),(g,sixth_clan) => {
+      const v = p1VictoryPct(g)
+      return {
+        clan_name: sixth_clan,
+        selection_size: g.length,
+        pct_p1_victory: v
+      }
+    }),(el) => el["selection_size"] > optimal_computation_min_dataset_size)
+
+    if(trials.length < 1){
+      return undefined
+    }else{
+      // max victory P2
+      return _.sortBy(trials,(el) => -(100-el["pct_p1_victory"]))[0]
+    }
+  }
+  function optimal_45th_clan_draft(data,current_selection){
+    const dataset = _.select(data,(d) => {
+      return (d["clans_selected"][0] === current_selection[0]) 
+        && ((d["clans_selected"][1] === current_selection[1]) || (d["clans_selected"][2] === current_selection[1]))
+        && ((d["clans_selected"][1] === current_selection[2]) || (d["clans_selected"][2] === current_selection[2]))
+    })
+    const trials = _.filter(_.map(_.groupBy(dataset, (d) => [d["clans_selected"][3],d["clans_selected"][4]].sort()),(g,fourfifth_clan) => {
+      const v = p1VictoryPct(g)
+      return {
+        fourfifth_clan: fourfifth_clan.split(","),
+        best_scenario: optimal_6th_clan_draft(g,[...current_selection,...fourfifth_clan.split(",")])
+      }
+    }),(el) => el["best_scenario"] !== undefined)
+
+    if(trials.length < 1){
+      return undefined
+    }else{
+      // max victory P2
+      return _.sortBy(trials,(el) => -(el["best_scenario"]["pct_p1_victory"]))[0] // max P1 victory
+    }
+  }
+  function optimal_23th_clan_draft(data,current_selection){
+    const dataset = _.select(data,(d) => {
+      return (d["clans_selected"][0] === current_selection[0]) 
+    })
+    const trials = _.filter(_.map(_.groupBy(dataset, (d) => [d["clans_selected"][1],d["clans_selected"][2]].sort()),(g,secondthird_clan) => {
+      const v = p1VictoryPct(g)
+      return {
+        secondthird_clan: secondthird_clan.split(","),
+        best_scenario: optimal_45th_clan_draft(g,[...current_selection,...secondthird_clan.split(",")])
+      }
+    }),(el) => el["best_scenario"] !== undefined)
+
+    if(trials.length < 1){
+      return undefined
+    }else{
+      // max victory P2
+      return _.sortBy(trials,(el) => -(100-el["best_scenario"]["best_scenario"]["pct_p1_victory"]))[0] // max P1 victory
+    }
+  }
+
+  function optimal_1st_clan_draft(data){
+    const trials = _.filter(_.map(_.groupBy(data, (d) => d["clans_selected"][0]),(g,first_clan) => {
+      const v = p1VictoryPct(g)
+      return {
+        first_clan: first_clan,
+        best_scenario: optimal_23th_clan_draft(g,[first_clan])
+      }
+    }),(el) => el["best_scenario"] !== undefined)
+
+    if(trials.length < 1){
+      return undefined
+    }else{
+      // max victory P2
+      return _.sortBy(trials,(el) => -(100-el["best_scenario"]["best_scenario"]["best_scenario"]["pct_p1_victory"]))[0] // max P1 victory
+    }
+  }  
 
   function p1VictoryPct(data){
     const totElements = data.length;
@@ -41,6 +124,216 @@
 
   // Initialize htm with Preact
   const html = htm.bind(h);
+
+  function OptimalDraft(props){
+    if (props.clansSelected[0] === undefined){
+      // draft with no knowledge
+      const res = optimal_1st_clan_draft(props.data)
+      if (res === undefined){
+        return html`<div>No optimal draft in data</div>`
+      }else{
+        return html `<table class="nice-table">
+          <tr>
+            <th></th>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <i>
+                ${res["best_scenario"]["best_scenario"]["best_scenario"]["selection_size"]} games
+              </i>
+            </td>
+          </tr>
+          <tr>
+            <td>Win</td>
+            <td>${res["best_scenario"]["best_scenario"]["best_scenario"]["pct_p1_victory"]}%</td>
+            <td>${100-res["best_scenario"]["best_scenario"]["best_scenario"]["pct_p1_victory"]}%</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[res["first_clan"]]}">${res["first_clan"]}</td>
+            <td class="nice ${clans_classes[res["best_scenario"]["secondthird_clan"][0]]}">
+              ${res["best_scenario"]["secondthird_clan"][0]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[res["best_scenario"]["best_scenario"]["fourfifth_clan"][0]]}">
+              ${res["best_scenario"]["best_scenario"]["fourfifth_clan"][0]}
+            </td>
+            <td class="nice ${clans_classes[res["best_scenario"]["secondthird_clan"][1]]}">
+              ${res["best_scenario"]["secondthird_clan"][1]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[res["best_scenario"]["best_scenario"]["fourfifth_clan"][1]]}">
+              ${res["best_scenario"]["best_scenario"]["fourfifth_clan"][1]}
+            </td>
+            <td class="nice ${clans_classes[res["best_scenario"]["best_scenario"]["best_scenario"]["clan_name"]]}">
+              ${res["best_scenario"]["best_scenario"]["best_scenario"]["clan_name"]}
+            </td>
+          </tr>
+        </table>`
+      }
+    }else if ((props.clansSelected[1] === undefined) || (props.clansSelected[2] === undefined)){
+      // draft with already one clan
+      const res = optimal_23th_clan_draft(props.data,[props.clansSelected[0]])
+      if (res === undefined){
+        return html`<div>No optimal draft in data</div>`
+      }else{
+        return html `<table class="nice-table">
+          <tr>
+            <th></th>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <i>
+                ${res["best_scenario"]["best_scenario"]["selection_size"]} games
+              </i>
+            </td>
+          </tr>
+          <tr>
+            <td>Win</td>
+            <td>${res["best_scenario"]["best_scenario"]["pct_p1_victory"]}%</td>
+            <td>${100-res["best_scenario"]["best_scenario"]["pct_p1_victory"]}%</td>
+          </tr>          
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[props.clansSelected[0]]}">${props.clansSelected[0]}</td>
+            <td class="nice ${clans_classes[res["secondthird_clan"][0]]}">
+              ${res["secondthird_clan"][0]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[res["best_scenario"]["fourfifth_clan"][0]]}">
+              ${res["best_scenario"]["fourfifth_clan"][0]}
+            </td>
+            <td class="nice ${clans_classes[res["secondthird_clan"][1]]}">
+              ${res["secondthird_clan"][1]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[res["best_scenario"]["fourfifth_clan"][1]]}">
+              ${res["best_scenario"]["fourfifth_clan"][1]}
+            </td>
+            <td class="nice ${clans_classes[res["best_scenario"]["best_scenario"]["clan_name"]]}">
+              ${res["best_scenario"]["best_scenario"]["clan_name"]}
+            </td>
+          </tr>
+        </table>`
+      }
+    }else if ((props.clansSelected[3] === undefined) || (props.clansSelected[4] === undefined)){
+      // draft with 3 clans already picked
+      const res = optimal_45th_clan_draft(props.data,[props.clansSelected[0],props.clansSelected[1],props.clansSelected[2]])
+      if (res === undefined){
+        return html`<div>No optimal draft in data</div>`
+      }else{
+        return html `<table class="nice-table">
+          <tr>
+            <th></th>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <i>
+                ${res["best_scenario"]["selection_size"]} games
+              </i>
+            </td>
+          </tr>
+          <tr>
+            <td>Win</td>
+            <td>${res["best_scenario"]["pct_p1_victory"]}%</td>
+            <td>${100-res["best_scenario"]["pct_p1_victory"]}%</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[props.clansSelected[0]]}">${props.clansSelected[0]}</td>
+            <td class="nice ${clans_classes[props.clansSelected[1]]}">
+              ${props.clansSelected[1]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[res["fourfifth_clan"][0]]}">
+              ${res["fourfifth_clan"][0]}
+            </td>
+            <td class="nice ${clans_classes[props.clansSelected[2]]}">
+              ${props.clansSelected[2]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[res["fourfifth_clan"][1]]}">
+              ${res["fourfifth_clan"][1]}
+            </td>
+            <td class="nice ${clans_classes[res["best_scenario"]["clan_name"]]}">
+              ${res["best_scenario"]["clan_name"]}
+            </td>
+          </tr>
+        </table>`
+      }
+    }else if (props.clansSelected[5] === undefined){
+      // draft with 5 clans selected
+      const res = optimal_6th_clan_draft(props.data,[props.clansSelected[0],props.clansSelected[1],props.clansSelected[2],props.clansSelected[3],props.clansSelected[4]])
+      if (res === undefined){
+        return html`<div>No optimal draft in data</div>`
+      }else{
+        return html `<table class="nice-table">
+          <tr>
+            <th></th>
+            <th>P1</th>
+            <th>P2</th>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <i>
+                ${res["selection_size"]} games
+              </i>
+            </td>
+          </tr>
+          <tr>
+            <td>Win</td>
+            <td>${res["pct_p1_victory"]}%</td>
+            <td>${100-res["pct_p1_victory"]}%</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[props.clansSelected[0]]}">${props.clansSelected[0]}</td>
+            <td class="nice ${clans_classes[props.clansSelected[1]]}">
+              ${props.clansSelected[1]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[props.clansSelected[3]]}">
+              ${props.clansSelected[3]}
+            </td>
+            <td class="nice ${clans_classes[props.clansSelected[2]]}">
+              ${props.clansSelected[2]}
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td class="nice ${clans_classes[props.clansSelected[4]]}">
+              ${props.clansSelected[4]}
+            </td>
+            <td class="nice ${clans_classes[res["clan_name"]]}">
+              ${res["clan_name"]}
+            </td>
+          </tr>
+        </table>`
+      }
+    }else{
+      return ""
+    }
+  }
 
   function Clan (props) {
     const p1pct = p1VictoryPct(props.hypothesisData)
@@ -60,7 +353,7 @@
         </div>
         <h1>${props.clan_name}</h1>
         <p>If next pick :</p1>
-        <table class="victory-stat-table">
+        <table class="nice-table">
           <tr>
             <th></th>
             <th>P1</th>
@@ -157,6 +450,12 @@
         min: _.min(_.map(allData, (el) => el["average_rank"])),
         max: _.max(_.map(allData, (el) => el["average_rank"]))
       })
+
+        // console.log(optimal_6th_clan_draft(allData,["Abhilasha","Xi'an","Galmi","Narashima","Tomorrow"]))
+      // console.log(optimal_45th_clan_draft(allData,["Abhilasha","Xi'an","Galmi"]))
+      // console.log(optimal_23th_clan_draft(allData,["Abhilasha"]))
+      console.log(optimal_1st_clan_draft(allData))
+
     }, [allData,minElo,clanBanned,clansSelected,passives])
 
     return html`
@@ -307,7 +606,10 @@
         })}
       </div>
     </div>
-
+    <div>
+      <h3>Optimal Draft</h3>
+      <${OptimalDraft} data=${selectedData} clansSelected=${clansSelected} />
+    </div>
   </div>
 </div>
 
