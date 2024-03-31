@@ -88,7 +88,6 @@
   }
 
   function filterData({data,clanBanned,minElo,clansSelected,passives}){
-    console.log(passives)
     return _.filter(data,(el) => {
       return (el["average_rank"] >= minElo)
         && ((clanBanned.length === 0) || _.isEqual(clanBanned,el["clans_banned"]))
@@ -178,44 +177,20 @@
       </div>
 <div class="container flex-row">
   <div class="flex-column left-panel nice">
-    <div class="flex-row nice">
-      ${[
+    ${_.map(_.groupBy([
         {clan_class:"xian",clan_name: "Xi'an"},
         {clan_class:"narashima",clan_name: "Narashima"},
         {clan_class:"abhilasha",clan_name: "Abhilasha"},
-        {clan_class:"galmi",clan_name: "Galmi"}
-      ].map((el) => html`
-        <${Clan} 
-          clan_class=${el.clan_class} 
-          clan_name=${el.clan_name}
-          ban_selected=${clanBanned.length > 0} 
-          selectBan=${(c) => setClanBanned([c])}
-          selectClan=${(c) => selectClan(c)}
-          visible=${
-            (clanBanned.indexOf(el.clan_name) < 0) 
-            && (clansSelected.indexOf(el.clan_name) < 0)
-            && (passives.indexOf(el.clan_name) < 0)
-          }
-          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives})}
-          hypothesisPassive=${
-            passives.length === 2 ? 
-              undefined :
-              filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name]})
-          }
-          all_clans_selected=${clansSelected.indexOf(undefined) < 0}
-          datasetSize=${selectedData.length}
-          passives_selected=${passives.length === 2}
-          selectPassive=${(c) => setPassives([...passives,c])}
-        />
-      `)}
-    </div>
-    <div class="flex-row nice">
-      ${[
+        {clan_class:"galmi",clan_name: "Galmi"},
         {clan_class:"tomorrow",clan_name: "Tomorrow"},
         {clan_class:"goan-sul",clan_name: "Goan-Sul"},
         {clan_class:"justice",clan_name: "Justice"},
-        {clan_class:"phoenix",clan_name: "Phoenix"}
-      ].map((el) => html`
+        {clan_class:"phoenix",clan_name: "Phoenix"},
+        {clan_class:"abunakkashii",clan_name: "Abunakkashii"}
+      ], (el,i) => parseInt(i/4)), (g) => {
+      console.log(g)
+      return html`<div class="flex-row nice">
+        ${g.map((el) => html`
         <${Clan} 
           clan_class=${el.clan_class} 
           clan_name=${el.clan_name}
@@ -239,34 +214,8 @@
           selectPassive=${(c) => setPassives([...passives,c])}
         />
       `)}
-    </div>
-    <div class="flex-row nice">
-      <${Clan} 
-        clan_class="abunakkashii" 
-        clan_name="Abunakkashii" 
-        ban_selected=${clanBanned.length > 0} 
-        selectBan=${(c) => setClanBanned([c])}
-        selectClan=${(c) => selectClan(c)}
-        visible=${
-          (clanBanned.indexOf("Abunakkashii") < 0) 
-          && (clansSelected.indexOf("Abunakkashii") < 0)
-          && (passives.indexOf("Abunakkashii") < 0)
-        }
-        hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection("Abunakkashii"),passives})}
-        hypothesisPassive=${
-          passives.length === 2 ? 
-            undefined :
-            filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,"Abunakkashii"]})
-        }
-        all_clans_selected=${clansSelected.indexOf(undefined) < 0}
-        datasetSize=${selectedData.length}
-        passives_selected=${passives.length === 2}
-        selectPassive=${(c) => setPassives([...passives,c])}
-      />
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
-    </div>    
+      </div>`
+    })}
   </div>
   <div class="right-panel flex-col nice">
     <div class="flex-row">
