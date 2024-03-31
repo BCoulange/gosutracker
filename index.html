@@ -44,7 +44,6 @@
 
   function Clan (props) {
     const p1pct = p1VictoryPct(props.hypothesisData)
-    console.log(props.datasetSize)
 
     return html `
       <div class="box ${props.clan_class} ${props.visible ? '' : "hidden"}">
@@ -54,6 +53,9 @@
           </div>
           <div>
             ${props.ban_selected ? '' : html`<button onClick=${(e) => props.selectBan(props.clan_name)}>ban</button>`}            
+          </div>
+          <div>
+            ${props.passives_selected ? '' : html `<button onClick=${(e) => props.selectPassive(props.clan_name)}>passive</button>`}
           </div>
         </div>
         <h1>${props.clan_name}</h1>
@@ -98,6 +100,11 @@
     const [datasetELO, setDatasetELO] = useState({min: 0, max: 100})
     const [clanBanned,setClanBanned] = useState([])
     const [clansSelected,setClanSelected] = useState([undefined,undefined,undefined,undefined,undefined,undefined])
+    const [passives,setPassives] = useState([])
+
+    function removePassive(clan_name){
+      setPassives(passives.filtrer((el) => el !== clan_name))
+    }
 
     function addClanToSelection(clan_name){
       const nextIndex = clansSelected.indexOf(undefined)
@@ -178,6 +185,8 @@
           hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
           all_clans_selected=${clansSelected.indexOf(undefined) < 0}
           datasetSize=${selectedData.length}
+          passives_selected=${passives.length === 2}
+          selectPassive=${setPassives([...passives,el.clan_name])}
         />
       `)}
     </div>
@@ -198,6 +207,8 @@
           hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
           all_clans_selected=${clansSelected.indexOf(undefined) < 0}
           datasetSize=${selectedData.length}
+          passives_selected=${passives.length === 2}
+          selectPassive=${setPassives([...passives,el.clan_name])}
         />
       `)}
     </div>
@@ -212,6 +223,8 @@
         hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection("Abunakkashii")})}
         all_clans_selected=${clansSelected.indexOf(undefined) < 0}
         datasetSize=${selectedData.length}
+        passives_selected=${passives.length === 2}
+        selectPassive=${setPassives([...passives,"Abunakkashii"])}
       />
       <div class="box"></div>
       <div class="box"></div>
@@ -280,6 +293,20 @@
         )}
       </ul>
     </div>
+    <div>
+      <h3>Passives</h3>
+      <div class="flex-row">
+        ${passives.map((clan_name) => {
+          return html`
+            <div class="box ${clans_classes[clan_name]}">
+              ${clan_name}
+              <button onClick=${(e) => removePassive(clan_name)}>remove</button>
+            </div>   
+          `
+        })}
+      </div>
+    </div>
+
   </div>
 </div>
 
