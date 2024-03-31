@@ -1,0 +1,7 @@
+scrapping/gamereviews
+scrapping/games
+scrapping/gamestatistics
+scrapping/creds.json
+scrapping/*.json
+scrapping/*.html
+**/**.DS_Store
