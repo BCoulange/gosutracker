@@ -136,7 +136,7 @@
     return html`
       <div class="nice flex-row">
         <div>
-          Number of games: ${selectedData.length}
+          Number of games: ${selectedData.length} / ${allData.length}
         </div>
         <div class="flex-row">
           <div>
@@ -250,7 +250,28 @@
         `
       })}
     </div>
-
+    <div>
+      <h3>Victory conditions</h3>
+      <ul>
+        ${_.map(
+            _.sortBy(
+              _.map(
+                _.groupBy(
+                  selectedData,
+                  (d) => d.victory_condition
+                ), 
+                (v,k) => {
+                  return {nb: v.length, name: k}
+                }
+              ), 
+              (el) => - el.nb
+            ), 
+            (el) => {
+              return html`<li> ${el.name} : ${parseInt(parseFloat(el.nb)/selectedData.length*100)}% (${el.nb}) </li>`
+            }
+        )}
+      </ul>
+    </div>
   </div>
 </div>
 
