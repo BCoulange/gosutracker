@@ -72,15 +72,23 @@
             <td colspan="2">
               <small><i>
                 ${props.hypothesisData.length} games (${parseInt(parseFloat(props.hypothesisData.length)/props.datasetSize*100)}%)
-              </small></i>
+              </i></small>
             </td>
+          </tr>
+          <tr>
+              <small><i>
+                ${props.hypothesisPassive === undefined ? '' : 
+                  html `Passive in ${props.hypothesisPassive.length} (${parseInt(parseFloat(props.hypothesisPassive.length)/props.datasetSize*100)}%)`
+                }
+              </i></small>
           </tr>
         </table>        
       </div>
     `    
   }
 
-  function filterData({data,clanBanned,minElo,clansSelected}){
+  function filterData({data,clanBanned,minElo,clansSelected,passives}){
+    console.log(passives)
     return _.filter(data,(el) => {
       return (el["average_rank"] >= minElo)
         && ((clanBanned.length === 0) || _.isEqual(clanBanned,el["clans_banned"]))
@@ -90,6 +98,8 @@
         && ((clansSelected[3] === undefined) || (el["clans_selected"][3] === clansSelected[3]) || (el["clans_selected"][4] === clansSelected[3]))
         && ((clansSelected[4] === undefined) || (el["clans_selected"][3] === clansSelected[4]) || (el["clans_selected"][4] === clansSelected[4]))
         && ((clansSelected[5] === undefined) || (el["clans_selected"][5] === clansSelected[5]))
+        && ((passives[0] === undefined) || (el["clan_passives"].indexOf(passives[0])) >= 0)
+        && ((passives[1] === undefined) || (el["clan_passives"].indexOf(passives[1])) >= 0)
     })
   }
 
@@ -103,7 +113,7 @@
     const [passives,setPassives] = useState([])
 
     function removePassive(clan_name){
-      setPassives(passives.filtrer((el) => el !== clan_name))
+      setPassives(passives.filter((el) => el !== clan_name))
     }
 
     function addClanToSelection(clan_name){
@@ -138,12 +148,12 @@
       setAllData(await response.json());
     },[])
     useEffect(() => {
-      setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected}))
+      setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected,passives}))
       setDatasetELO({
         min: _.min(_.map(allData, (el) => el["average_rank"])),
         max: _.max(_.map(allData, (el) => el["average_rank"]))
       })
-    }, [allData,minElo,clanBanned,clansSelected])
+    }, [allData,minElo,clanBanned,clansSelected,passives])
 
     return html`
       <div class="nice flex-row">
@@ -181,12 +191,21 @@
           ban_selected=${clanBanned.length > 0} 
           selectBan=${(c) => setClanBanned([c])}
           selectClan=${(c) => selectClan(c)}
-          visible=${(clanBanned.indexOf(el.clan_name) < 0) && (clansSelected.indexOf(el.clan_name) < 0)}
-          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
+          visible=${
+            (clanBanned.indexOf(el.clan_name) < 0) 
+            && (clansSelected.indexOf(el.clan_name) < 0)
+            && (passives.indexOf(el.clan_name) < 0)
+          }
+          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives})}
+          hypothesisPassive=${
+            passives.length === 2 ? 
+              undefined :
+              filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name]})
+          }
           all_clans_selected=${clansSelected.indexOf(undefined) < 0}
           datasetSize=${selectedData.length}
           passives_selected=${passives.length === 2}
-          selectPassive=${setPassives([...passives,el.clan_name])}
+          selectPassive=${(c) => setPassives([...passives,c])}
         />
       `)}
     </div>
@@ -203,12 +222,21 @@
           ban_selected=${clanBanned.length > 0} 
           selectBan=${(c) => setClanBanned([c])}
           selectClan=${(c) => selectClan(c)}
-          visible=${(clanBanned.indexOf(el.clan_name) < 0) && (clansSelected.indexOf(el.clan_name) < 0)}
-          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
+          visible=${
+            (clanBanned.indexOf(el.clan_name) < 0) 
+            && (clansSelected.indexOf(el.clan_name) < 0)
+            && (passives.indexOf(el.clan_name) < 0)
+          }
+          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives})}
+          hypothesisPassive=${
+            passives.length === 2 ? 
+              undefined :
+              filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name]})
+          }
           all_clans_selected=${clansSelected.indexOf(undefined) < 0}
           datasetSize=${selectedData.length}
           passives_selected=${passives.length === 2}
-          selectPassive=${setPassives([...passives,el.clan_name])}
+          selectPassive=${(c) => setPassives([...passives,c])}
         />
       `)}
     </div>
@@ -219,12 +247,21 @@
         ban_selected=${clanBanned.length > 0} 
         selectBan=${(c) => setClanBanned([c])}
         selectClan=${(c) => selectClan(c)}
-        visible=${(clanBanned.indexOf("Abunakkashii") < 0) && (clansSelected.indexOf("Abunakkashii") < 0)}
-        hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection("Abunakkashii")})}
+        visible=${
+          (clanBanned.indexOf("Abunakkashii") < 0) 
+          && (clansSelected.indexOf("Abunakkashii") < 0)
+          && (passives.indexOf("Abunakkashii") < 0)
+        }
+        hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection("Abunakkashii"),passives})}
+        hypothesisPassive=${
+          passives.length === 2 ? 
+            undefined :
+            filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,"Abunakkashii"]})
+        }
         all_clans_selected=${clansSelected.indexOf(undefined) < 0}
         datasetSize=${selectedData.length}
         passives_selected=${passives.length === 2}
-        selectPassive=${setPassives([...passives,"Abunakkashii"])}
+        selectPassive=${(c) => setPassives([...passives,c])}
       />
       <div class="box"></div>
       <div class="box"></div>
