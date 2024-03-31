@@ -4,6 +4,12 @@
 .slidecontainer > input {
   width: 100%;
 }
+.min-100{
+  min-height: 100px;
+}
+.min-200{
+  min-height: 200px;
+}
 .left-panel{
   flex-grow: 2 !important;
 }
@@ -61,6 +67,7 @@
 
 .border {
   border:solid 1px black;
+  margin: 5px;
 }
 
 .flex-column {

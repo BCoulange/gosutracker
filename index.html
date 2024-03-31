@@ -230,10 +230,10 @@
           <h1>P1</h1>
           <p>${p1VictoryPct(selectedData)}% WIN</p>
         </div>
-        <div id="first-player-pick1" class="flex-column border">
+        <div id="first-player-pick1" class="flex-column border  min-100">
           <${ClanSelected} clan_name=${clansSelected[0]} removeClan=${removeClan}/>         
         </div>
-        <div id="first-player-pick2" class="flex-column border grow-2">
+        <div id="first-player-pick2" class="flex-column border grow-2  min-200">
           <${ClanSelected} clan_name=${clansSelected[3]} removeClan=${removeClan}/>         
           <${ClanSelected} clan_name=${clansSelected[4]} removeClan=${removeClan}/>         
         </div>
@@ -243,11 +243,11 @@
           <h1>P2</h1>
           <p>${100-p1VictoryPct(selectedData)}% WIN</p>
         </div>
-        <div id="second-player-pick1" class="flex-column border grow-2">
+        <div id="second-player-pick1" class="flex-column border grow-2 min-200">
           <${ClanSelected} clan_name=${clansSelected[1]} removeClan=${removeClan}/>         
           <${ClanSelected} clan_name=${clansSelected[2]} removeClan=${removeClan}/>         
         </div>
-        <div id="second-player-pick2" class="flex-column border">
+        <div id="second-player-pick2" class="flex-column border  min-100">
           <${ClanSelected} clan_name=${clansSelected[5]} removeClan=${removeClan}/>         
         </div>
       </div>
