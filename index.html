@@ -103,10 +103,10 @@
   }
 
   function App (props) {
-    const [minElo,setMinElo] = useState(0)
+    const [minElo,setMinElo] = useState(100)
     const [selectedData,setSelectedData] = useState([])
     const [allData,setAllData] = useState([])
-    const [datasetELO, setDatasetELO] = useState({min: 0, max: 100})
+    const [datasetELO, setDatasetELO] = useState({min: 0, max: 500})
     const [clanBanned,setClanBanned] = useState([])
     const [clansSelected,setClanSelected] = useState([undefined,undefined,undefined,undefined,undefined,undefined])
     const [passives,setPassives] = useState([])
