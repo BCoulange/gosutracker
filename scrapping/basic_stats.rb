@@ -1,7 +1,7 @@
 require "json"
 require "date"
 
-data = JSON.parse(File.read("game_statistics_with_fp.json"))
+data = JSON.parse(File.read("data.json"))
 gosu_clans = ["Xi'an", 'Narashima', 'Abhilasha', 'Galmi', 'Tomorrow', 'Goan-Sul','Justice', 'Phoenix','Abunakkashii']
 
 
@@ -214,5 +214,7 @@ banned_stats.each do |k,v|
   puts "- #{k} : #{(v.to_f/with_ban.size*100).to_i}% (#{v}/#{with_ban.size})"
 end
 
+max_number_of_configs = 9*8*7*6*5*4*3/6/6
+nb_of_configs_seen = data.map{|d| [d["clans_banned"]] + [d["clans_selected"][0],d["clans_selected"][3],d["clans_selected"][4]].sort + [d["clans_selected"][1],d["clans_selected"][2],d["clans_selected"][5]].sort}.uniq.size
 
-
+puts "#{(nb_of_configs_seen.to_f/max_number_of_configs*100).to_i}% configs seen (#{nb_of_configs_seen}/#{max_number_of_configs})"
