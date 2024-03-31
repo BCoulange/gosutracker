@@ -44,6 +44,7 @@
 
   function Clan (props) {
     const p1pct = p1VictoryPct(props.hypothesisData)
+    console.log(props.datasetSize)
 
     return html `
       <div class="box ${props.clan_class} ${props.visible ? '' : "hidden"}">
@@ -66,7 +67,11 @@
             <td>${100-p1pct}%</td>
           </tr>
           <tr>
-            <td colspan="2">${props.hypothesisData.length} games</td>
+            <td colspan="2">
+              <small><i>
+                ${props.hypothesisData.length} games (${parseInt(parseFloat(props.hypothesisData.length)/props.datasetSize*100)}%)
+              </small></i>
+            </td>
           </tr>
         </table>        
       </div>
@@ -172,6 +177,7 @@
           visible=${(clanBanned.indexOf(el.clan_name) < 0) && (clansSelected.indexOf(el.clan_name) < 0)}
           hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
           all_clans_selected=${clansSelected.indexOf(undefined) < 0}
+          datasetSize=${selectedData.length}
         />
       `)}
     </div>
@@ -191,6 +197,7 @@
           visible=${(clanBanned.indexOf(el.clan_name) < 0) && (clansSelected.indexOf(el.clan_name) < 0)}
           hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name)})}
           all_clans_selected=${clansSelected.indexOf(undefined) < 0}
+          datasetSize=${selectedData.length}
         />
       `)}
     </div>
@@ -204,6 +211,7 @@
         visible=${(clanBanned.indexOf("Abunakkashii") < 0) && (clansSelected.indexOf("Abunakkashii") < 0)}
         hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection("Abunakkashii")})}
         all_clans_selected=${clansSelected.indexOf(undefined) < 0}
+        datasetSize=${selectedData.length}
       />
       <div class="box"></div>
       <div class="box"></div>
