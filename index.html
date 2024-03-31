@@ -59,28 +59,33 @@
           </div>
         </div>
         <h1>${props.clan_name}</h1>
+        <p>If next pick :</p1>
         <table class="victory-stat-table">
           <tr>
+            <th></th>
             <th>P1</th>
             <th>P2</th>
           </tr>
           <tr>
+            <td>win</td>
             <td>${p1pct}%</td>
             <td>${100-p1pct}%</td>
           </tr>
           <tr>
-            <td colspan="2">
+            <td colspan="3">
               <small><i>
-                ${props.hypothesisData.length} games (${parseInt(parseFloat(props.hypothesisData.length)/props.datasetSize*100)}%)
+                picked in ${props.hypothesisData.length} games (${parseInt(parseFloat(props.hypothesisData.length)/props.datasetSize*100)}%)
               </i></small>
             </td>
           </tr>
           <tr>
+            <td colspan="3">
               <small><i>
                 ${props.hypothesisPassive === undefined ? '' : 
                   html `Passive in ${props.hypothesisPassive.length} (${parseInt(parseFloat(props.hypothesisPassive.length)/props.datasetSize*100)}%)`
                 }
               </i></small>
+            </td>
           </tr>
         </table>        
       </div>
@@ -192,34 +197,41 @@
         {clan_class:"goan-sul",clan_name: "Goan-Sul"},
         {clan_class:"justice",clan_name: "Justice"},
         {clan_class:"phoenix",clan_name: "Phoenix"},
-        {clan_class:"abunakkashii",clan_name: "Abunakkashii"}
+        {clan_class:"abunakkashii",clan_name: "Abunakkashii"},
+        undefined,
+        undefined,
+        undefined
       ], (el,i) => parseInt(i/4)), (g) => {
-      console.log(g)
       return html`<div class="flex-row nice">
-        ${g.map((el) => html`
-        <${Clan} 
-          clan_class=${el.clan_class} 
-          clan_name=${el.clan_name}
-          ban_selected=${clanBanned.length > 0} 
-          selectBan=${(c) => setClanBanned([c])}
-          selectClan=${(c) => selectClan(c)}
-          visible=${
-            (clanBanned.indexOf(el.clan_name) < 0) 
-            && (clansSelected.indexOf(el.clan_name) < 0)
-            && (passives.indexOf(el.clan_name) < 0)
+        ${g.map((el) => {
+          if(el ===undefined){
+            return html`<div></div>`
+          }else{
+            return html`
+            <${Clan} 
+              clan_class=${el.clan_class} 
+              clan_name=${el.clan_name}
+              ban_selected=${clanBanned.length > 0} 
+              selectBan=${(c) => setClanBanned([c])}
+              selectClan=${(c) => selectClan(c)}
+              visible=${
+                (clanBanned.indexOf(el.clan_name) < 0) 
+                && (clansSelected.indexOf(el.clan_name) < 0)
+                && (passives.indexOf(el.clan_name) < 0)
+              }
+              hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives})}
+              hypothesisPassive=${
+                passives.length === 2 ? 
+                  undefined :
+                  filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name]})
+              }
+              all_clans_selected=${clansSelected.indexOf(undefined) < 0}
+              datasetSize=${selectedData.length}
+              passives_selected=${passives.length === 2}
+              selectPassive=${(c) => setPassives([...passives,c])}
+            />`
           }
-          hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives})}
-          hypothesisPassive=${
-            passives.length === 2 ? 
-              undefined :
-              filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name]})
-          }
-          all_clans_selected=${clansSelected.indexOf(undefined) < 0}
-          datasetSize=${selectedData.length}
-          passives_selected=${passives.length === 2}
-          selectPassive=${(c) => setPassives([...passives,c])}
-        />
-      `)}
+        })}
       </div>`
     })}
   </div>
