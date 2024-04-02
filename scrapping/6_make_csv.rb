@@ -80,7 +80,7 @@ end
 csv_lines = [output[0].keys] + output.map{|el| el.map{|k,v| v}}
 
 File.open("data.csv","w+") do |f|
-  f.write csv_lines.map{|l| l.join(";")}.join("\n")
+  f.write csv_lines.map{|l| l.map{|el| el.to_s.gsub(',','')}.join(",")}.join("\n")
 end
 
 
