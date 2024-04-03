@@ -385,9 +385,10 @@
     `    
   }
 
-  function filterData({data,clanBanned,minElo,clansSelected,passives}){
+  function filterData({data,clanBanned,minElo,clansSelected,passives,pseudoSelected}){
     return _.filter(data,(el) => {
       return (el["average_rank"] >= minElo)
+        && ((pseudoSelected === undefined) || (pseudoSelected === "") || (el["players"][0]["pseudo"] === pseudoSelected) ||  (el["players"][1]["pseudo"] === pseudoSelected))
         && ((clanBanned.length === 0) || _.isEqual(clanBanned,el["clans_banned"]))
         && ((clansSelected[0] === undefined) || (el["clans_selected"][0] === clansSelected[0]))
         && ((clansSelected[1] === undefined) || (el["clans_selected"][1] === clansSelected[1]) || (el["clans_selected"][2] === clansSelected[1]))
@@ -408,6 +409,7 @@
     const [clanBanned,setClanBanned] = useState([])
     const [clansSelected,setClanSelected] = useState([undefined,undefined,undefined,undefined,undefined,undefined])
     const [passives,setPassives] = useState([])
+    const [pseudoSelected,setPseudoSelected] = useState("")
 
     function removePassive(clan_name){
       setPassives(passives.filter((el) => el !== clan_name))
@@ -445,13 +447,13 @@
       setAllData(await response.json());
     },[])
     useEffect(() => {
-      setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected,passives}))
+      setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected,passives,pseudoSelected}))
       setDatasetELO({
         min: _.min(_.map(allData, (el) => el["average_rank"])),
         max: _.max(_.map(allData, (el) => el["average_rank"]))
       })
 
-    }, [allData,minElo,clanBanned,clansSelected,passives])
+    }, [allData,minElo,clanBanned,clansSelected,passives,pseudoSelected])
 
     return html`
       <div class="nice flex-row">
@@ -463,6 +465,7 @@
           <a class="nice" href="/data.json" download="data.json">
             JSON
           </a>
+          <input placeholder="pseudo" value="${pseudoSelected}" onInput=${(e) => setPseudoSelected(e.currentTarget.value)}/>
         </div>
         <div class="flex-row">
           <div>
@@ -510,11 +513,11 @@
                 && (clansSelected.indexOf(el.clan_name) < 0)
                 && (passives.indexOf(el.clan_name) < 0)
               }
-              hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives})}
+              hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives, pseudoSelected})}
               hypothesisPassive=${
                 passives.length === 2 ? 
                   undefined :
-                  filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name]})
+                  filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name],pseudoSelected})
               }
               all_clans_selected=${clansSelected.indexOf(undefined) < 0}
               datasetSize=${selectedData.length}
