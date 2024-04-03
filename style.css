@@ -48,6 +48,20 @@
   background-color: #52473c;
 }
 
+.navbar {
+  overflow: hidden;
+  background-color: #fff;
+}
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+body{
+  padding-top: 20px;
+}
+
+
 .nice{
   margin: 5px;
   padding: 5px;

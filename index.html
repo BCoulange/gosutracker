@@ -9,6 +9,7 @@
   <meta name="author" content="">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
 </head>
 
 <body>
@@ -33,6 +34,7 @@
     "Phoenix":"phoenix",
     "Abunakkashii":"abunakkashii"
   }
+
 
   function optimal_6th_clan_draft(data,current_selection){
     const dataset = _.select(data,(d) => {
@@ -335,6 +337,96 @@
     }
   }
 
+  function ChoicesChart(props){
+
+    useEffect(() => {
+      console.log(props.data)
+      if(props.data !== undefined){
+        const seuil = 10
+        const choice_tree = {}
+        let labels = ["Draft"]
+        let parents = [""]
+        let values = [props.data.length]
+        _.map(_.groupBy(props.data,(el) => el["clans_selected"][0]),(gc1,c1) => {
+            choice_tree[c1] = {size: gc1.length}
+            if (gc1.length > seuil){
+              labels.push(`${c1}`)
+              parents.push(`Draft`)
+              values.push(gc1.length)    
+              _.map(_.groupBy(gc1,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[0]),(gc2,c2) => {
+                  choice_tree[c1][c2] = {size: gc2.length}
+                  if (gc2.length > seuil){
+                    labels.push(`${c1}-${c2}`)
+                    parents.push(`${c1}`)
+                    values.push(gc2.length)      
+                  _.map(_.groupBy(gc2,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[1]),(gc3,c3) => {
+                    if (gc3.length > seuil){
+                      choice_tree[c1][c2][c3] = {size: gc3.length}
+                      labels.push(`${c1}-${c2}-${c3}`)
+                      parents.push(`${c1}-${c2}`)
+                      values.push(gc3.length)
+                      _.map(_.groupBy(gc3,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[0]),(gc4,c4) => {
+                        if (gc4.length > seuil){
+                        choice_tree[c1][c2][c3][c4] = {size: gc4.length}
+                        labels.push(`${c1}-${c2}-${c3}-${c4}`)
+                        parents.push(`${c1}-${c2}-${c3}`)
+                        values.push(gc4.length)
+                        _.map(_.groupBy(gc4,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[1]),(gc5,c5) => {
+                          if(gc5.length > seuil){
+                          choice_tree[c1][c2][c3][c4][c5] = {size: gc5.length}
+                          labels.push(`${c1}-${c2}-${c3}-${c4}-${c5}`)
+                          parents.push(`${c1}-${c2}-${c3}-${c4}`)
+                          values.push(gc5.length)
+                          _.map(_.groupBy(gc5,(el) => el["clans_selected"][5]),(gc6,c6) => {
+                            if(gc6.length > seuil){
+                            choice_tree[c1][c2][c3][c4][c5][c6] = {size: gc6.length}
+                            labels.push(`${c1}-${c2}-${c3}-${c4}-${c5}-${c6}`)
+                            parents.push(`${c1}-${c2}-${c3}-${c4}-${c5}`)
+                            values.push(gc6.length)
+                          }
+                          })
+                        }
+                        })
+                      }
+                      })
+                    }
+                  })
+                }
+              })    
+            }
+        })
+
+        const data = [{
+          type: "sunburst",
+          labels,
+          parents,
+          values,
+          outsidetextfont: {size: 20, color: "#377eb8"},
+          leaf: {opacity: 0.4},
+          marker: {line: {width: 2}},
+          "branchvalues": 'total'
+        }];
+
+        var layout = {
+          margin: {l: 0, r: 0, b: 0, t: 0},
+          width: 500,
+          height: 500
+        };
+
+
+        Plotly.newPlot('myDiv', data, layout);  
+      }
+
+    },[props.data])
+
+
+    return html`<div style="width:1000px;height:1000px;">
+        <div id="myDiv"/>
+      </div>
+    ` 
+  }
+
+
   function Clan (props) {
     const p1pct = p1VictoryPct(props.hypothesisData)
 
@@ -456,7 +548,7 @@
     }, [allData,minElo,clanBanned,clansSelected,passives,pseudoSelected])
 
     return html`
-      <div class="nice flex-row">
+      <div class="nice flex-row navbar sticky">
         <div>
           Number of games: ${selectedData.length} / ${allData.length}
           <a class="nice" href="/data.csv" download="data.csv">
@@ -610,7 +702,7 @@
     </div>
   </div>
 </div>
-
+<!-- ChoicesChart} data=selectedData} -->
     `;
   }
 
