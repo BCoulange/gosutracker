@@ -107,4 +107,14 @@ button{
   width: 100%;
 }
 
+table.bordered{
+  border:2px solid black;  
+}
+table.bordered > tr{
+  border:1px solid black;  
+}
+table.bordered > tr > td{
+  border:1px solid black;  
+  padding: 5px;
+}
 

@@ -648,12 +648,14 @@
       5
     )
     const table_size = _.max([p1_win_sample === undefined ? 0 : p1_win_sample.length,p2_win_sample === undefined ? 0 : p2_win_sample.length])
-    return html `<table>
+    return html `<table class="bordered">
       <tr><th>P1 WIN</th><th>P2 WIN</th></tr>
       ${_.range(table_size).map((i) => {
         return html`<tr>
-          <td><a href="https://boardgamearena.com/table?table=${p1_win_sample[i] === undefined ? '' : p1_win_sample[i]["id"]}" target="_blank"> see game </a></td>
-          <td><a href="https://boardgamearena.com/table?table=${p2_win_sample[i] === undefined ? '' : p2_win_sample[i]["id"]}" target="_blank"> see game </a></td>
+          <td>${p1_win_sample[i] === undefined ? '' : html`<a href="https://boardgamearena.com/table?table=${p1_win_sample[i]["id"]}" target="_blank">
+            see game ${p1_win_sample[i]["id"]} on BGA </a>`}</td>
+          <td>${p2_win_sample[i] === undefined ? '' : html`<a href="https://boardgamearena.com/table?table=${p2_win_sample[i]["id"]}" target="_blank"> 
+            see game ${p2_win_sample[i]["id"]} on BGA </a>`}</td>
         </tr>`
       })}
     </table>`
