@@ -34,6 +34,17 @@
     "Phoenix":"phoenix",
     "Abunakkashii":"abunakkashii"
   }
+  const clans_colors = {
+    "Xi'an":"#d1ba24",
+    "Narashima":"#d18324",
+    "Abhilasha":"#5424ad",
+    "Galmi":"#2a8014",
+    "Tomorrow":"#a422b5",
+    "Goan-Sul":"#911010",
+    "Justice":"#a1a1a1",
+    "Phoenix":"#0f33b8",
+    "Abunakkashii":"#52473c"
+  }
 
 
   function optimal_6th_clan_draft(data,current_selection){
@@ -340,83 +351,100 @@
   function ChoicesChart(props){
 
     useEffect(() => {
-      console.log(props.data)
-      if(props.data !== undefined){
-        const seuil = 10
-        const choice_tree = {}
-        let labels = ["Draft"]
-        let parents = [""]
-        let values = [props.data.length]
-        _.map(_.groupBy(props.data,(el) => el["clans_selected"][0]),(gc1,c1) => {
-            choice_tree[c1] = {size: gc1.length}
-            if (gc1.length > seuil){
-              labels.push(`${c1}`)
-              parents.push(`Draft`)
-              values.push(gc1.length)    
-              _.map(_.groupBy(gc1,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[0]),(gc2,c2) => {
-                  choice_tree[c1][c2] = {size: gc2.length}
-                  if (gc2.length > seuil){
-                    labels.push(`${c1}-${c2}`)
-                    parents.push(`${c1}`)
-                    values.push(gc2.length)      
-                  _.map(_.groupBy(gc2,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[1]),(gc3,c3) => {
-                    if (gc3.length > seuil){
-                      choice_tree[c1][c2][c3] = {size: gc3.length}
-                      labels.push(`${c1}-${c2}-${c3}`)
-                      parents.push(`${c1}-${c2}`)
-                      values.push(gc3.length)
-                      _.map(_.groupBy(gc3,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[0]),(gc4,c4) => {
-                        if (gc4.length > seuil){
-                        choice_tree[c1][c2][c3][c4] = {size: gc4.length}
-                        labels.push(`${c1}-${c2}-${c3}-${c4}`)
-                        parents.push(`${c1}-${c2}-${c3}`)
-                        values.push(gc4.length)
-                        _.map(_.groupBy(gc4,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[1]),(gc5,c5) => {
-                          if(gc5.length > seuil){
-                          choice_tree[c1][c2][c3][c4][c5] = {size: gc5.length}
-                          labels.push(`${c1}-${c2}-${c3}-${c4}-${c5}`)
-                          parents.push(`${c1}-${c2}-${c3}-${c4}`)
-                          values.push(gc5.length)
-                          _.map(_.groupBy(gc5,(el) => el["clans_selected"][5]),(gc6,c6) => {
-                            if(gc6.length > seuil){
-                            choice_tree[c1][c2][c3][c4][c5][c6] = {size: gc6.length}
-                            labels.push(`${c1}-${c2}-${c3}-${c4}-${c5}-${c6}`)
-                            parents.push(`${c1}-${c2}-${c3}-${c4}-${c5}`)
-                            values.push(gc6.length)
+      const delayDebounceFn = setTimeout(() => {
+
+        if(props.data !== undefined){
+          const seuil = 10
+          const choice_tree = {}
+          let labels = ["Draft"]
+          let parents = [""]
+          let colors = ["#ffffff"]
+          let values = [props.data.length]
+          _.map(_.groupBy(props.data,(el) => el["clans_selected"][0]),(gc1,c1) => {
+              choice_tree[c1] = {size: gc1.length}
+              if (gc1.length > seuil){
+                labels.push(`${c1}`)
+                parents.push(`Draft`)
+                values.push(gc1.length)    
+                colors.push(clans_colors[c1])
+                _.map(_.groupBy(gc1,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[0]),(gc2,c2) => {
+                    choice_tree[c1][c2] = {size: gc2.length}
+                    if (gc2.length > seuil){
+                      labels.push(`${c1}-${c2}`)
+                      parents.push(`${c1}`)
+                      values.push(gc2.length)      
+                      colors.push(clans_colors[c2])
+                    _.map(_.groupBy(gc2,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[1]),(gc3,c3) => {
+                      if (gc3.length > seuil){
+                        choice_tree[c1][c2][c3] = {size: gc3.length}
+                        labels.push(`${c1}-${c2}-${c3}`)
+                        parents.push(`${c1}-${c2}`)
+                        values.push(gc3.length)
+                        colors.push(clans_colors[c3])
+                        _.map(_.groupBy(gc3,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[0]),(gc4,c4) => {
+                          if (gc4.length > seuil){
+                          choice_tree[c1][c2][c3][c4] = {size: gc4.length}
+                          labels.push(`${c1}-${c2}-${c3}-${c4}`)
+                          parents.push(`${c1}-${c2}-${c3}`)
+                          values.push(gc4.length)
+                          colors.push(clans_colors[c4])
+                          _.map(_.groupBy(gc4,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[1]),(gc5,c5) => {
+                            if(gc5.length > seuil){
+                            choice_tree[c1][c2][c3][c4][c5] = {size: gc5.length}
+                            labels.push(`${c1}-${c2}-${c3}-${c4}-${c5}`)
+                            parents.push(`${c1}-${c2}-${c3}-${c4}`)
+                            values.push(gc5.length)
+                            colors.push(clans_colors[c5])
+                            _.map(_.groupBy(gc5,(el) => el["clans_selected"][5]),(gc6,c6) => {
+                              if(gc6.length > seuil){
+                              choice_tree[c1][c2][c3][c4][c5][c6] = {size: gc6.length}
+                              labels.push(`${c1}-${c2}-${c3}-${c4}-${c5}-${c6}`)
+                              parents.push(`${c1}-${c2}-${c3}-${c4}-${c5}`)
+                              values.push(gc6.length)
+                              colors.push(clans_colors[c6])
+                            }
+                            })
                           }
                           })
                         }
                         })
                       }
-                      })
-                    }
-                  })
-                }
-              })    
-            }
-        })
+                    })
+                  }
+                })    
+              }
+          })
 
-        const data = [{
-          type: "sunburst",
-          labels,
-          parents,
-          values,
-          outsidetextfont: {size: 20, color: "#377eb8"},
-          leaf: {opacity: 0.4},
-          marker: {line: {width: 2}},
-          "branchvalues": 'total'
-        }];
+          const data = [{
+            type: "sunburst",
+            labels,
+            parents,
+            values,
+            outsidetextfont: {size: 20, color: "#377eb8"},
+            leaf: {opacity: 0.4},
+            marker: {
+              line: {width: 2},
+              colors
+            },
+            "branchvalues": 'total'
+          }];
 
-        var layout = {
-          margin: {l: 0, r: 0, b: 0, t: 0},
-          width: 500,
-          height: 500
-        };
+          var layout = {
+            margin: {l: 0, r: 0, b: 0, t: 0},
+            width: 500,
+            height: 500
+          };
 
 
-        Plotly.newPlot('myDiv', data, layout);  
-      }
+          Plotly.newPlot('myDiv', data, layout);  
+        }
 
+      }, 1000)
+
+
+
+
+      return () => clearTimeout(delayDebounceFn)
     },[props.data])
 
 
@@ -702,7 +730,7 @@
     </div>
   </div>
 </div>
-<!-- ChoicesChart} data=selectedData} -->
+<${ChoicesChart} data=${selectedData}/>
     `;
   }
 
