@@ -19,7 +19,7 @@
   import { h, render } from 'https://esm.sh/preact';
   
   import htm from 'https://esm.sh/htm';
-  import { useState, useEffect } from 'https://esm.sh/preact/hooks';
+  import { useState, useEffect, useRef } from 'https://esm.sh/preact/hooks';
 
   const optimal_computation_min_dataset_size = 10
 
@@ -45,6 +45,7 @@
     "Phoenix":"#0f33b8",
     "Abunakkashii":"#52473c"
   }
+  const stats = ["lvl1_played","lvl2_played","lvl3_played","cards_drawn","cards_captured","cards_destroyed","cards_sacrificed","cards_shifted","force_of_will","activation_tokens"]
 
 
   function optimal_6th_clan_draft(data,current_selection){
@@ -348,6 +349,107 @@
     }
   }
 
+  function StatsBoxPlot(props){
+    const plot = useRef(null);
+
+    useEffect(() => {
+      const delayDebounceFn = setTimeout(() => {
+
+        if(plot!==undefined &&  props.data !== undefined){
+          let y = []
+          let traceP1Winner = {
+            x:[], 
+            y:[],
+            name: "p1 winner",
+            marker: {color: '#00FF00'},
+            type: 'box',
+            boxmean: false,
+            orientation: 'h'
+          }
+          let traceP1Loser = {
+            x:[], 
+            y:[],
+            name:"p1 loser",
+            marker: {color: '#FF0000'},
+            type: 'box',
+            boxmean: false,
+            orientation: 'h'
+          }
+          let traceP2Winner = {
+            x:[], 
+            y:[],
+            name: "p2 winner",
+            marker: {color: '#00FF88'},
+            type: 'box',
+            boxmean: false,
+            orientation: 'h'
+          }
+          let traceP2Loser = {
+            x:[], 
+            y:[],
+            name:"p2 loser",
+            marker: {color: '#FF0088'},
+            type: 'box',
+            boxmean: false,
+            orientation: 'h'
+          }
+          stats.forEach((s) => {
+            props.data.forEach((d) => {
+              if(d["players"].filter((p) => p["is_winner"]).length === 1){
+                if(d["players"][0]["is_winner"]){
+                  if(d["players"][0]["is_first_player"]){
+                    traceP1Winner.x.push(d["players"][0][s])
+                    traceP1Winner.y.push(s)
+                    traceP2Loser.x.push(d["players"][1][s])
+                    traceP2Loser.y.push(s)                    
+                  }else{
+                    traceP1Loser.x.push(d["players"][0][s])
+                    traceP1Loser.y.push(s)
+                    traceP2Winner.x.push(d["players"][1][s])
+                    traceP2Winner.y.push(s)                                      
+                  }
+                }else{
+                  if(d["players"][0]["is_first_player"]){
+                    traceP1Loser.x.push(d["players"][0][s])
+                    traceP1Loser.y.push(s)
+                    traceP2Winner.x.push(d["players"][1][s])
+                    traceP2Winner.y.push(s)                                      
+                  }else{
+                    traceP1Winner.x.push(d["players"][0][s])
+                    traceP1Winner.y.push(s)
+                    traceP2Loser.x.push(d["players"][1][s])
+                    traceP2Loser.y.push(s)                    
+                  }
+                }
+              }
+            })
+          })
+
+          const layout = {
+            title: 'Play stats',
+            boxmode: 'group',
+            xaxis: {
+              title: 'Statistic',
+              zeroline: false
+            },
+          };
+
+          Plotly.newPlot(plot.current, [traceP1Winner,traceP1Loser,traceP2Winner,traceP2Loser],layout);
+        }
+
+
+      }, 500)
+      return () => clearTimeout(delayDebounceFn)
+    },[plot,props.data])
+
+
+    return html`<div style="width:100%;height:800px;">
+        <div ref=${plot} style="width:100%;height:100%;"/>
+      </div>
+    ` 
+
+  }
+
   function ChoicesChart(props){
 
     useEffect(() => {
@@ -580,7 +682,6 @@
         min: _.min(_.map(allData, (el) => el["average_rank"])),
         max: _.max(_.map(allData, (el) => el["average_rank"]))
       })
-
     }, [allData,minElo,clanBanned,clansSelected,passives,pseudoSelected])
 
     return html`
@@ -739,6 +840,7 @@
   </div>
 </div>
   <${ChoicesChart} data=${selectedData}/>
+  <${StatsBoxPlot} data=${selectedData}/>
     `;
   }
 
