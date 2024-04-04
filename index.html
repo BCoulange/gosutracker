@@ -631,6 +631,35 @@
     })
   }
 
+  function SampleLinks(props){
+    if(props.data === undefined){
+      return html``
+    }
+    const p1_win_sample = _.sample(
+      props.data.filter((d) => {
+        return ((d["players"][0]["is_winner"]) && (d["players"][0]["is_first_player"])) || ((d["players"][1]["is_winner"]) && (d["players"][1]["is_first_player"]))
+      }),
+      5
+    )
+    const p2_win_sample = _.sample(
+      props.data.filter((d) => {
+        return ((d["players"][0]["is_winner"]) && !(d["players"][0]["is_first_player"])) || ((d["players"][1]["is_winner"]) && !(d["players"][1]["is_first_player"]))
+      }),
+      5
+    )
+    const table_size = _.max([p1_win_sample === undefined ? 0 : p1_win_sample.length,p2_win_sample === undefined ? 0 : p2_win_sample.length])
+    return html `<table>
+      <tr><th>P1 WIN</th><th>P2 WIN</th></tr>
+      ${_.range(table_size).map((i) => {
+        return html`<tr>
+          <td><a href="https://boardgamearena.com/table?table=${p1_win_sample[i] === undefined ? '' : p1_win_sample[i]["id"]}" target="_blank"> see game </a></td>
+          <td><a href="https://boardgamearena.com/table?table=${p2_win_sample[i] === undefined ? '' : p2_win_sample[i]["id"]}" target="_blank"> see game </a></td>
+        </tr>`
+      })}
+    </table>`
+
+  }
+
   function App (props) {
     const [minElo,setMinElo] = useState(100)
     const [selectedData,setSelectedData] = useState([])
@@ -832,6 +861,10 @@
           `
         })}
       </div>
+    </div>
+    <div>
+      <h3>Example Games</h3>
+      <${SampleLinks} data=${selectedData}/>
     </div>
     <div>
       <h3>Optimal Draft</h3>
