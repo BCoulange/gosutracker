@@ -354,7 +354,7 @@
       const delayDebounceFn = setTimeout(() => {
 
         if(props.data !== undefined){
-          const seuil = 10
+          const seuil = 1
           const choice_tree = {}
           let labels = ["Draft"]
           let parents = [""]
@@ -730,7 +730,7 @@
     </div>
   </div>
 </div>
-<${ChoicesChart} data=${selectedData}/>
+  <${ChoicesChart} data=${selectedData}/>
     `;
   }
 
