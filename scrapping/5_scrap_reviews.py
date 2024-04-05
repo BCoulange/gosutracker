@@ -37,7 +37,6 @@ for g in games:
   if "is_first_player" in d["players"][0]:
     # it's already done
     print("already got first player!")
-    output.append(d)
   else:
     path = join("scrapping/gamereviews/", str(d["id"])+".html")
     if not exists(path):
@@ -62,8 +61,6 @@ for g in games:
       # matching the info
       first_player_pseudo = picks[0]["pseudo"]
       
-
-
       d["players"][0]["is_first_player"] = first_player_pseudo.strip() ==  d["players"][0]["pseudo"].strip()
       d["players"][1]["is_first_player"] = first_player_pseudo.strip() ==  d["players"][1]["pseudo"].strip()
       d["clans_selected"] = [el['clan'] for el in picks]
@@ -71,8 +68,23 @@ for g in games:
       if len(d["clans_selected"]) < 6:
         raise "Not the good number of clans"
 
-      output.append(d)
+
+  # date
+  date_path = join("scrapping/enddates/", str(d["id"])+".json")
+  if exists(date_path):
+    with open(date_path) as dp:
+      dpp = json.load(dp)
+      d["finished_at"] = dpp["date"]
+  else:
+    print("no date")
+  
+  output.append(d)
+
 
 print(str(len(output))+" stats with fp")
+
+# cleaning pseudo out of data
+
+
 with open('data.json', 'w+') as f:
   json.dump(output, f)
