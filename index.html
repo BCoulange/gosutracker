@@ -47,8 +47,9 @@
   }
   const stats = ["lvl1_played","lvl2_played","lvl3_played","cards_drawn","cards_captured","cards_destroyed","cards_sacrificed","cards_shifted","force_of_will","activation_tokens"]
 
-
-  function optimal_6th_clan_draft(data,current_selection){
+  let trials_prior = {size: 200, pct: 50}
+  function optimal_6th_clan_draft(data,current_selection,options = {}){
+    const bayesian_prior = (options["bayesian_prior"] !== undefined) && (options["bayesian_prior"])
     const dataset = _.select(data,(d) => {
       return (d["clans_selected"][0] === current_selection[0]) 
         && ((d["clans_selected"][1] === current_selection[1]) || (d["clans_selected"][2] === current_selection[1]))
@@ -57,13 +58,20 @@
         && ((d["clans_selected"][3] === current_selection[4]) || (d["clans_selected"][4] === current_selection[4]))
     })
     const trials = _.filter(_.map(_.groupBy(dataset, (d) => d["clans_selected"][5]),(g,sixth_clan) => {
-      const v = p1VictoryPct(g)
+      let pct_p1_victory = p1VictoryPct(g)
+      let selection_size = g.length
+      if(bayesian_prior){
+        pct_p1_victory = parseInt((parseFloat(p1VictoryPct(g))*g.length+trials_prior.pct*trials_prior.size)/(g.length+trials_prior.size))
+        selection_size = g.length + trials_prior.size
+      }
+
       return {
         clan_name: sixth_clan,
-        selection_size: g.length,
-        pct_p1_victory: v
+        selection_size,
+        pct_p1_victory
       }
     }),(el) => el["selection_size"] > optimal_computation_min_dataset_size)
+
 
     if(trials.length < 1){
       return undefined
@@ -72,17 +80,16 @@
       return _.sortBy(trials,(el) => -(100-el["pct_p1_victory"]))[0]
     }
   }
-  function optimal_45th_clan_draft(data,current_selection){
+  function optimal_45th_clan_draft(data,current_selection,options = {}){
     const dataset = _.select(data,(d) => {
       return (d["clans_selected"][0] === current_selection[0]) 
         && ((d["clans_selected"][1] === current_selection[1]) || (d["clans_selected"][2] === current_selection[1]))
         && ((d["clans_selected"][1] === current_selection[2]) || (d["clans_selected"][2] === current_selection[2]))
     })
     const trials = _.filter(_.map(_.groupBy(dataset, (d) => [d["clans_selected"][3],d["clans_selected"][4]].sort()),(g,fourfifth_clan) => {
-      const v = p1VictoryPct(g)
       return {
         fourfifth_clan: fourfifth_clan.split(","),
-        best_scenario: optimal_6th_clan_draft(g,[...current_selection,...fourfifth_clan.split(",")])
+        best_scenario: optimal_6th_clan_draft(g,[...current_selection,...fourfifth_clan.split(",")],options)
       }
     }),(el) => el["best_scenario"] !== undefined)
 
@@ -93,15 +100,14 @@
       return _.sortBy(trials,(el) => -(el["best_scenario"]["pct_p1_victory"]))[0] // max P1 victory
     }
   }
-  function optimal_23th_clan_draft(data,current_selection){
+  function optimal_23th_clan_draft(data,current_selection,options = {}){
     const dataset = _.select(data,(d) => {
       return (d["clans_selected"][0] === current_selection[0]) 
     })
     const trials = _.filter(_.map(_.groupBy(dataset, (d) => [d["clans_selected"][1],d["clans_selected"][2]].sort()),(g,secondthird_clan) => {
-      const v = p1VictoryPct(g)
       return {
         secondthird_clan: secondthird_clan.split(","),
-        best_scenario: optimal_45th_clan_draft(g,[...current_selection,...secondthird_clan.split(",")])
+        best_scenario: optimal_45th_clan_draft(g,[...current_selection,...secondthird_clan.split(",")],options)
       }
     }),(el) => el["best_scenario"] !== undefined)
 
@@ -113,12 +119,11 @@
     }
   }
 
-  function optimal_1st_clan_draft(data){
+  function optimal_1st_clan_draft(data,options = {}){
     const trials = _.filter(_.map(_.groupBy(data, (d) => d["clans_selected"][0]),(g,first_clan) => {
-      const v = p1VictoryPct(g)
       return {
         first_clan: first_clan,
-        best_scenario: optimal_23th_clan_draft(g,[first_clan])
+        best_scenario: optimal_23th_clan_draft(g,[first_clan],options)
       }
     }),(el) => el["best_scenario"] !== undefined)
 
@@ -141,8 +146,9 @@
 
   function OptimalDraft(props){
     if (props.clansSelected[0] === undefined){
+      const prior_size = props.bayesian_prior ? trials_prior.size : 0
       // draft with no knowledge
-      const res = optimal_1st_clan_draft(props.data)
+      const res = optimal_1st_clan_draft(props.data,{bayesian_prior: props.bayesian_prior})
       if (res === undefined){
         return html`<div>No optimal draft in data</div>`
       }else{
@@ -155,7 +161,7 @@
           <tr>
             <td colspan="3">
               <i>
-                ${res["best_scenario"]["best_scenario"]["best_scenario"]["selection_size"]} games
+                ${res["best_scenario"]["best_scenario"]["best_scenario"]["selection_size"]-prior_size} games
               </i>
             </td>
           </tr>
@@ -677,6 +683,7 @@
     const [clansSelected,setClanSelected] = useState([undefined,undefined,undefined,undefined,undefined,undefined])
     const [passives,setPassives] = useState([])
     const [pseudoSelected,setPseudoSelected] = useState("")
+    const [bayesianPrior,setBayesianPrior] = useState(true)
 
     function removePassive(clan_name){
       setPassives(passives.filter((el) => el !== clan_name))
@@ -875,8 +882,8 @@
       <${SampleLinks} data=${selectedData}/>
     </div>
     <div>
-      <h3>Optimal Draft</h3>
-      <${OptimalDraft} data=${selectedData} clansSelected=${clansSelected} />
+      <h3>Optimal Draft <small class="pull-right"><i>Prior<input type="checkbox" checked=${bayesianPrior ? "checked" : ""} onClick=${(e) => setBayesianPrior(!bayesianPrior)}/></i></small></h3>
+      <${OptimalDraft} data=${selectedData} clansSelected=${clansSelected} bayesian_prior=${bayesianPrior} />
     </div>
   </div>
 </div>
