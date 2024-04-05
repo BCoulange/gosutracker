@@ -471,7 +471,10 @@
                 parents.push(`Draft`)
                 values.push(gc1.length)    
                 colors.push(clans_colors[c1])
-                _.map(_.groupBy(gc1,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[0]),(gc2,c2) => {
+
+                const c23_by_size = _.map(_.sortBy(_.groupBy(_.flatten(_.map(gc1,(el) => [el["clans_selected"][1],el["clans_selected"][2]])),(el) => el),(v,k) => -v.length),(el) => el[0])
+
+                _.map(_.groupBy(gc1,(el) => _.sortBy([el["clans_selected"][1],el["clans_selected"][2]],(c) => c23_by_size.indexOf(c))[0]),(gc2,c2) => {
                     choice_tree[c1][c2] = {size: gc2.length}
                     if (gc2.length > seuil){
                       labels.push(`${c2}`)
@@ -479,7 +482,7 @@
                       parents.push(`${c1}`)
                       values.push(gc2.length)      
                       colors.push(clans_colors[c2])
-                    _.map(_.groupBy(gc2,(el) => [el["clans_selected"][1],el["clans_selected"][2]].sort()[1]),(gc3,c3) => {
+                    _.map(_.groupBy(gc2,(el) => _.sortBy([el["clans_selected"][1],el["clans_selected"][2]],(c) => c23_by_size.indexOf(c))[1]),(gc3,c3) => {
                       if (gc3.length > seuil){
                         choice_tree[c1][c2][c3] = {size: gc3.length}
                         labels.push(`${c3}`)
@@ -487,7 +490,10 @@
                         parents.push(`${c1}-${c2}`)
                         values.push(gc3.length)
                         colors.push(clans_colors[c3])
-                        _.map(_.groupBy(gc3,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[0]),(gc4,c4) => {
+
+                        const c34_by_size = _.map(_.sortBy(_.groupBy(_.flatten(_.map(gc3,(el) => [el["clans_selected"][3],el["clans_selected"][4]])),(el) => el),(v,k) => -v.length),(el) => el[0])
+
+                        _.map(_.groupBy(gc3,(el) => _.sortBy([el["clans_selected"][3],el["clans_selected"][4]],(c) => c34_by_size.indexOf(c))[0]),(gc4,c4) => {
                           if (gc4.length > seuil){
                           choice_tree[c1][c2][c3][c4] = {size: gc4.length}
                           labels.push(`${c4}`)
@@ -495,7 +501,7 @@
                           parents.push(`${c1}-${c2}-${c3}`)
                           values.push(gc4.length)
                           colors.push(clans_colors[c4])
-                          _.map(_.groupBy(gc4,(el) => [el["clans_selected"][3],el["clans_selected"][4]].sort()[1]),(gc5,c5) => {
+                          _.map(_.groupBy(gc4,(el) => _.sortBy([el["clans_selected"][3],el["clans_selected"][4]],(c) => c34_by_size.indexOf(c))[1]),(gc5,c5) => {
                             if(gc5.length > seuil){
                             choice_tree[c1][c2][c3][c4][c5] = {size: gc5.length}
                             labels.push(`${c5}`)
