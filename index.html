@@ -457,10 +457,10 @@
   }
 
   function ChoicesChart(props){
+    const el_id = _.uniqueId("mydiv-");
 
     useEffect(() => {
       const delayDebounceFn = setTimeout(() => {
-
         if(props.data !== undefined){
           const seuil = 0
           const choice_tree = {}
@@ -558,7 +558,7 @@
           };
 
 
-          Plotly.newPlot('myDiv', data, layout);  
+          Plotly.newPlot(el_id, data, layout);  
         }
 
       }, 500)
@@ -571,7 +571,7 @@
 
 
     return html`<div style="width:100%;height:500px;">
-        <div id="myDiv" style="width:100%;height:100%;"/>
+        <div id=${el_id} style="width:100%;height:100%;"/>
       </div>
     ` 
   }
@@ -738,7 +738,7 @@
           <a class="nice" href="/data.json" download="data.json">
             JSON
           </a>
-          <input placeholder="pseudo" value="${pseudoSelected}" onInput=${(e) => setPseudoSelected(e.currentTarget.value)}/>
+          <!-- <input placeholder="pseudo" value="${pseudoSelected}" onInput=${(e) => setPseudoSelected(e.currentTarget.value)}/> -->
         </div>
         <div class="flex-row">
           <div>
@@ -887,7 +887,20 @@
     </div>
   </div>
 </div>
-  <${ChoicesChart} data=${selectedData}/>
+<div class="flex-row">
+  <div class="flex-column">
+    <h3>Player 1 winner draft</h3>
+    <${ChoicesChart} data=${selectedData.filter((d) => 
+      (d["players"][0]["is_first_player"] && d["players"][0]["is_winner"]) 
+      || (d["players"][1]["is_first_player"] && d["players"][1]["is_winner"]))}/>
+  </div>
+  <div class="flex-column">
+    <h3>Player 2 winner draft </h3>
+    <${ChoicesChart} data=${selectedData.filter((d) => 
+      (d["players"][0]["is_first_player"] && d["players"][1]["is_winner"]) 
+      || (d["players"][1]["is_first_player"] && d["players"][0]["is_winner"]))}/>
+  </div>
+</div>
   <${StatsBoxPlot} data=${selectedData}/>
     `;
   }
