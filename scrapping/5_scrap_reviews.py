@@ -69,14 +69,14 @@ for g in games:
         raise "Not the good number of clans"
 
 
-  # date
-  date_path = join("scrapping/enddates/", str(d["id"])+".json")
-  if exists(date_path):
-    with open(date_path) as dp:
-      dpp = json.load(dp)
-      d["finished_at"] = dpp["date"]
-  else:
-    print("no date")
+  # # date
+  # date_path = join("scrapping/enddates/", str(d["id"])+".json")
+  # if exists(date_path):
+  #   with open(date_path) as dp:
+  #     dpp = json.load(dp)
+  #     d["finished_at"] = dpp["date"]
+  # else:
+  #   print("no date")
   
   output.append(d)
 
