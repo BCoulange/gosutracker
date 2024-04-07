@@ -47,7 +47,7 @@ postdates = [absolute_to_iso(datetime.fromtimestamp(relative_to_absolute(el))) f
 import json
 with open('scrapping/games_data.json', 'w') as f:
     json.dump([{
-        "id": games[i]
+        "id": games[i],
         "date":postdates[i]
     } for i in range(len(games))], f)
 
