@@ -721,15 +721,17 @@
       setAllData(await response.json());
     },[])
     useEffect(() => {
+      // set min elo so that we have at least 1000 entries
+      if (allData.length > 1000){
+        setMinElo(_.sortBy(allData,(el) => -el["average_rank"])[1000]["average_rank"])
+      }
+    },[allData])
+    useEffect(() => {
       setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected,passives,pseudoSelected}))
       setDatasetELO({
         min: _.min(_.map(allData, (el) => el["average_rank"])),
         max: _.max(_.map(allData, (el) => el["average_rank"]))
       })
-      // set min elo so that we have at least 1000 entries
-      if (allData.length > 1000){
-        setMinElo(_.sortBy(allData,(el) => -el["average_rank"])[1000]["average_rank"])
-      }
     }, [allData,minElo,clanBanned,clansSelected,passives,pseudoSelected])
 
     return html`
