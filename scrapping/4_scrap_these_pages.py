@@ -36,6 +36,11 @@ for game in games:
     if (len(soup.select(".game_cancelled")) > 0) and (soup.select(".game_cancelled")[0]["style"] != "display:none"):
       continue
 
+    # game conceded
+    conceded = False
+    if (len(soup.select(".game_conceded")) > 0) and (soup.select(".game_conceded")[0]["style"] != "display:none"):
+      conceded = True
+
     game_infos = {
       "name":game, 
       "players":[],
@@ -88,7 +93,10 @@ for game in games:
     game_infos["clan_passives"] = [p1,p2]
 
     # - victory condition
-    game_infos["victory_condition"] = statistics.select('div.row-label:-soup-contains("Victory Type")')[0].find_next_sibling("div").get_text().strip()
+    if conceded:
+      game_infos["victory_condition"] = "Conceded"
+    else:
+      game_infos["victory_condition"] = statistics.select('div.row-label:-soup-contains("Victory Type")')[0].find_next_sibling("div").get_text().strip()
       
     # - number of rounds
     game_infos["nb_of_rounds"] = int(statistics.select('div.row-label:-soup-contains("Number of rounds")')[0].find_next_sibling("div").get_text().strip())

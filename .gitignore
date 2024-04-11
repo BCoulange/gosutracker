@@ -2,6 +2,7 @@ scrapping/enddates
 scrapping/gamereviews
 scrapping/games
 scrapping/gamestatistics
+scrapping/gamestatistics_old
 scrapping/creds.json
 scrapping/*.json
 scrapping/*.html
