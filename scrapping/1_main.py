@@ -38,10 +38,11 @@ for i in range(15):
   more.click()
   time.sleep(2+random.random()*2)
 
-html = popup.get_attribute('innerHTML')
-f = open("scrapping/gamelist.html", "w+")
-f.write(html)
-f.close()
+  if i%10 == 0:
+    print("saving...")
+    html = popup.get_attribute('innerHTML')
+    with open("scrapping/gamelist.html", "w+") as f:
+        f.write(html)
 
 
 

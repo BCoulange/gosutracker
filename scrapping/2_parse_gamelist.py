@@ -16,6 +16,7 @@ def relative_to_absolute(relative_time):
     hour_reg = re.compile(r'(\d+) hours? ago')
     hour30_reg = re.compile(r'(\d+) h (\d+) m ago')
     day_reg = re.compile(r'(\d+) days? ago')
+    month_reg = re.compile(r'(\d+) months? ago')
 
     if min_reg.match(relative_time):
         m = min_reg.search(relative_time)
@@ -31,6 +32,9 @@ def relative_to_absolute(relative_time):
     elif day_reg.match(relative_time):
         m = day_reg.search(relative_time)
         absolute_time = now - timedelta(days=int(m.group(1)))
+    elif month_reg.match(relative_time):
+        m = month_reg.search(relative_time)
+        absolute_time = now - timedelta(days=30.5*int(m.group(1)))
     else:
         print(relative_time)
         raise ValueError("Unsupported time format")
