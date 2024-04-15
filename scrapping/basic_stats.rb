@@ -220,10 +220,10 @@ base_game_configs = 8*7*6*5*4*3/6/6
 max_number_of_configs = to_ban*base_game_configs
 puts "max number of configs : #{max_number_of_configs}"
 puts "base game configs : #{base_game_configs}"
-nb_of_configs_seen = data.map{|d| d["clans_banned"] + [d["clans_selected"][0],d["clans_selected"][3],d["clans_selected"][4]].sort + [d["clans_selected"][1],d["clans_selected"][2],d["clans_selected"][5]].sort}.uniq.size
+nb_of_configs_seen = data.map{|d| (d["clans_banned"] + [d["clans_selected"][0],d["clans_selected"][3],d["clans_selected"][4]].sort + [d["clans_selected"][1],d["clans_selected"][2],d["clans_selected"][5]].sort).join("-")}.uniq.size
 
 
-groups = data.map{|d| d["clans_banned"] + [d["clans_selected"][0],d["clans_selected"][3],d["clans_selected"][4]].sort + [d["clans_selected"][1],d["clans_selected"][2],d["clans_selected"][5]].sort}.group_by{|el| el}
+groups = data.map{|d| (d["clans_banned"] + [d["clans_selected"][0],d["clans_selected"][3],d["clans_selected"][4]].sort + [d["clans_selected"][1],d["clans_selected"][2],d["clans_selected"][5]].sort).join('-')}.group_by{|el| el}
 # groups.sort_by{|k,v| -v.size}.each do |k,v|
 #   if v.size > 5
 #     puts "#{k} : #{v.size}"
@@ -231,14 +231,55 @@ groups = data.map{|d| d["clans_banned"] + [d["clans_selected"][0],d["clans_selec
 # end 
 
 threshold = 10
-groups2 = groups.group_by{|k,v| v.size > threshold ? threshold : v.size}.sort_by{|k,v| -k}
-groups2.each do |k,v|
+res = {}
+groups.each do |k,v|
+  siz_t = v.size
+  if siz_t > threshold
+    siz_t = threshold
+  end
+  if res[siz_t].nil?
+    res[siz_t] = 0
+  end
+  res[siz_t] += 1
+end
+res.sort_by{|k,v| k}.each do |k,v|
   if k == threshold
-    puts "seen more than #{k} times : #{v.map{|el| el.size}.inject(:+)}"
-  else 
-    puts "seen #{k} times : #{v.map{|el| el.size}.inject(:+)}"
+    puts "seen more than #{k} : #{v}"
+  else
+    puts "seeen #{k} times : #{v}"
   end
 end
+puts res.map{|k,v| v}.inject(:+)
+
 puts "#{(nb_of_configs_seen.to_f/max_number_of_configs*100).to_i}% configs seen (#{nb_of_configs_seen}/#{max_number_of_configs})"
+
+# simulation
+puts "SIMULATION"
+res = {}
+oracle = (1...data.size).map{|el| Random.rand(max_number_of_configs).to_i}
+groups = oracle.group_by{|el| el}
+
+threshold = 10
+res = {}
+groups.each do |k,v|
+  siz_t = v.size
+  if siz_t > threshold
+    siz_t = threshold
+  end
+  if res[siz_t].nil?
+    res[siz_t] = 0
+  end
+  res[siz_t] += 1
+end
+res.sort_by{|k,v| k}.each do |k,v|
+  if k == threshold
+    puts "seen more than #{k} : #{v}"
+  else
+    puts "seeen #{k} times : #{v}"
+  end
+end
+
+
+
 
 
