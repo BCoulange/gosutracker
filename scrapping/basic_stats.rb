@@ -280,7 +280,15 @@ res.sort_by{|k,v| k}.each do |k,v|
 end
 
 # justice
-j = data.select{|el| el["clans_selected"].include?("Justice")}
+elo = 200
+bigelo = data.select{|el| el["average_rank"] > elo}
+j = bigelo.select{|el| el["clans_selected"].include?("Justice")}
+puts "#{j.size} parties avec justice"
+jw = j.select{|el| el["victory_condition"] == "Turn over 3 Clan tiles (Justice)"}
+puts "#{jw.size} justice victories"
+puts "#{jw.size.to_f/j.size*100}%"
+
+j = bigelo.select{|el| ([el["clans_selected"][0],el["clans_selected"][3],el["clans_selected"][4]].include?("Justice") && el["players"][0]["is_winner"]) || ([el["clans_selected"][1],el["clans_selected"][2],el["clans_selected"][5]].include?("Justice") && el["players"][1]["is_winner"])}
 puts "#{j.size} parties avec justice"
 jw = j.select{|el| el["victory_condition"] == "Turn over 3 Clan tiles (Justice)"}
 puts "#{jw.size} justice victories"
