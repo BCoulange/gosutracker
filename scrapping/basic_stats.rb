@@ -279,7 +279,9 @@ res.sort_by{|k,v| k}.each do |k,v|
   end
 end
 
-
-
-
-
+# justice
+j = data.select{|el| el["clans_selected"].include?("Justice")}
+puts "#{j.size} parties avec justice"
+jw = j.select{|el| el["victory_condition"] == "Turn over 3 Clan tiles (Justice)"}
+puts "#{jw.size} justice victories"
+puts "#{jw.size.to_f/j.size*100}%"
