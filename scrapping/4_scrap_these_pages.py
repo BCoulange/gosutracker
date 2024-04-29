@@ -24,6 +24,8 @@ for game in games:
 
 
   with open(join("scrapping/games/", game)) as fp: 
+    if game == ".DS_Store":
+      continue
     game_id = re.compile("(\d+)\.html").search(game).group(1)
 
     # check if already done

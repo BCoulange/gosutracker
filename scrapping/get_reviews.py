@@ -36,12 +36,12 @@ cookie_button.click()
 
 time.sleep(5+random.random()*5)
 # we are good to go
- 
+
 games = [{
   "id": re.compile(r"(\d+)_(\d+)").search(f).group(2),
   "average_rank": int(re.compile(r"(\d+)_(\d+)").search(f).group(1)),
   "path": f
-} for f in listdir("scrapping/gamestatistics/") if isfile(join("scrapping/gamestatistics/", f))]
+} for f in listdir("scrapping/gamestatistics/") if isfile(join("scrapping/gamestatistics/", f)) and f != '.DS_Store']
 print(games[0])
 
 

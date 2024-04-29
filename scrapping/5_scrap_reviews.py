@@ -17,7 +17,7 @@ games = [{
   "id": re.compile(r"(\d+)_(\d+)").search(f).group(2),
   "average_rank": int(re.compile(r"(\d+)_(\d+)").search(f).group(1)),
   "path": f
-} for f in listdir("scrapping/gamestatistics/") if isfile(join("scrapping/gamestatistics/", f))]
+} for f in listdir("scrapping/gamestatistics/") if isfile(join("scrapping/gamestatistics/", f)) and f!=".DS_Store"]
 print(games[0])
 
 
@@ -58,15 +58,19 @@ for g in games:
           'clan': res.group(2)
         })
 
-      # matching the info
-      first_player_pseudo = picks[0]["pseudo"]
-      
-      d["players"][0]["is_first_player"] = first_player_pseudo.strip() ==  d["players"][0]["pseudo"].strip()
-      d["players"][1]["is_first_player"] = first_player_pseudo.strip() ==  d["players"][1]["pseudo"].strip()
-      d["clans_selected"] = [el['clan'] for el in picks]
+      if len(picks) == 0:
+        print("pb in review")
+        continue
+      else:
+        # matching the info
+        first_player_pseudo = picks[0]["pseudo"]
+        
+        d["players"][0]["is_first_player"] = first_player_pseudo.strip() ==  d["players"][0]["pseudo"].strip()
+        d["players"][1]["is_first_player"] = first_player_pseudo.strip() ==  d["players"][1]["pseudo"].strip()
+        d["clans_selected"] = [el['clan'] for el in picks]
 
-      if len(d["clans_selected"]) < 6:
-        raise "Not the good number of clans"
+        if len(d["clans_selected"]) < 6:
+          raise "Not the good number of clans"
 
 
   # # date
