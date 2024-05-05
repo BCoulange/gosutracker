@@ -30,7 +30,7 @@ element.click()
 time.sleep(2)
 popup = browser.find_element(By.CSS_SELECTOR, ".bga-popup-modal__content")
 
-for i in range(15):
+for i in range(30):
   print(i)
   browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", popup)
 
