@@ -626,10 +626,12 @@
     `    
   }
 
-  function filterData({data,clanBanned,minElo,clansSelected,passives,pseudoSelected}){
+  function filterData({data,clanBanned,minElo,clansSelected,passives,pseudoSelected, pseudoSelectedFilter, pseudoSelectedPlayerOrder}){
     return _.filter(data,(el) => {
       return (el["average_rank"] >= minElo)
         && ((pseudoSelected === undefined) || (pseudoSelected === "") || (el["players"][0]["pseudo"] === pseudoSelected) ||  (el["players"][1]["pseudo"] === pseudoSelected))
+        && ((pseudoSelected === undefined) || (pseudoSelectedFilter === "all") || ((pseudoSelectedFilter === "victories") && ((el["players"][0]["is_winner"] && el["players"][0]["pseudo"] === pseudoSelected) || (el["players"][1]["is_winner"] && el["players"][1]["pseudo"] === pseudoSelected))) || ((pseudoSelectedFilter === "defeats") && ((!el["players"][0]["is_winner"] && el["players"][0]["pseudo"] === pseudoSelected) || (!el["players"][1]["is_winner"] && el["players"][1]["pseudo"] === pseudoSelected))))
+        && ((pseudoSelected === undefined) || (pseudoSelectedPlayerOrder === 0) || ((pseudoSelectedPlayerOrder === 1) && (((el["players"][0]["pseudo"] === pseudoSelected) && el["players"][0]["is_first_player"])) || ((el["players"][1]["pseudo"] === pseudoSelected) && el["players"][1]["is_first_player"])) || ((pseudoSelectedPlayerOrder === 2) && (((el["players"][0]["pseudo"] === pseudoSelected) && !el["players"][0]["is_first_player"])) || ((el["players"][1]["pseudo"] === pseudoSelected) && !el["players"][1]["is_first_player"])))
         && ((clanBanned.length === 0) || _.isEqual(clanBanned,el["clans_banned"]))
         && ((clansSelected[0] === undefined) || (el["clans_selected"][0] === clansSelected[0]))
         && ((clansSelected[1] === undefined) || (el["clans_selected"][1] === clansSelected[1]) || (el["clans_selected"][2] === clansSelected[1]))
@@ -682,6 +684,8 @@
     const [clansSelected,setClanSelected] = useState([undefined,undefined,undefined,undefined,undefined,undefined])
     const [passives,setPassives] = useState([])
     const [pseudoSelected,setPseudoSelected] = useState("")
+    const [pseudoSelectedFilter,setPseudoSelectedFilter] = useState("all")
+    const [pseudoSelectedPlayerOrder,setPseudoSelectedPlayerOrder] = useState(0)
     const [bayesianPrior,setBayesianPrior] = useState(true)
     const [trialsPrior,setTrialsPrior] = useState({size: 0, pct: 50})    
 
@@ -727,12 +731,12 @@
       }
     },[allData])
     useEffect(() => {
-      setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected,passives,pseudoSelected}))
+      setSelectedData(filterData({data:allData,clanBanned,minElo,clansSelected,passives,pseudoSelected, pseudoSelectedFilter, pseudoSelectedPlayerOrder}))
       setDatasetELO({
         min: _.min(_.map(allData, (el) => el["average_rank"])),
         max: _.max(_.map(allData, (el) => el["average_rank"]))
       })
-    }, [allData,minElo,clanBanned,clansSelected,passives,pseudoSelected])
+    }, [allData,minElo,clanBanned,clansSelected,passives,pseudoSelected, pseudoSelectedFilter, pseudoSelectedPlayerOrder])
     useEffect(() => {
       setTrialsPrior({size: parseInt(selectedData.length/5), pct: p1VictoryPct(selectedData)})
     },[selectedData])
@@ -747,7 +751,17 @@
           <a class="nice" href="/data.json" download="data.json">
             JSON
           </a>
-          <!-- <input placeholder="pseudo" value="${pseudoSelected}" onInput=${(e) => setPseudoSelected(e.currentTarget.value)}/> -->
+          <input placeholder="pseudo" value="${pseudoSelected}" onInput=${(e) => setPseudoSelected(e.currentTarget.value)}/>
+          <select value=${pseudoSelectedFilter} onChange=${(e) => setPseudoSelectedFilter(e.currentTarget.value)}>
+            <option value="all">all</option>
+            <option value="victories">victories</option>
+            <option value="defeats">defeats</option>
+          </select>
+          <select value="${pseudoSelectedPlayerOrder}" onChange=${(e) => setPseudoSelectedPlayerOrder(parseInt(e.currentTarget.value))}>
+            <option value="0">all</option>
+            <option value="1">First player</option>
+            <option value="2">Second player</option>
+          </select>
         </div>
         <div class="flex-row">
           <div>
@@ -795,11 +809,11 @@
                 && (clansSelected.indexOf(el.clan_name) < 0)
                 && (passives.indexOf(el.clan_name) < 0)
               }
-              hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives, pseudoSelected})}
+              hypothesisData=${filterData({data:selectedData,clanBanned,minElo,clansSelected:addClanToSelection(el.clan_name),passives, pseudoSelected, pseudoSelectedFilter, pseudoSelectedPlayerOrder})}
               hypothesisPassive=${
                 passives.length === 2 ? 
                   undefined :
-                  filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name],pseudoSelected})
+                  filterData({data:selectedData,clanBanned,minElo,clansSelected,passives:[...passives,el.clan_name],pseudoSelected, pseudoSelectedFilter, pseudoSelectedPlayerOrder})
               }
               all_clans_selected=${clansSelected.indexOf(undefined) < 0}
               datasetSize=${selectedData.length}
